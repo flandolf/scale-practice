@@ -1,0 +1,95 @@
+{
+  "Preliminary": {
+    "scales": ["A harmonic minor", "G major", "F major"],
+    "chromatic": "G chromatic",
+    "arpeggios": ["A minor", "G major", "F major"]
+  },
+  "1": {
+    "scales": ["G major", "E harmonic minor", "F major", "D harmonic minor"],
+    "chromatic": "F chromatic",
+    "blues": "G blues",
+    "arpeggios": ["A minor", "G major", "E minor", "F major"]
+  },
+  "2": {
+    "scales": [
+      "C major",
+      "A harmonic minor",
+      "A melodic minor",
+      "G major",
+      "E harmonic minor",
+      "F major",
+      "D harmonic minor",
+      "Bb major",
+      "G harmonic minor"
+    ],
+    "chromatic": "C chromatic",
+    "blues": "F blues",
+    "arpeggios": [
+      "A minor",
+      "G major",
+      "E minor",
+      "F major",
+      "D minor",
+      "C major",
+      "Bb major",
+      "G minor"
+    ]
+  },
+  "3": {
+    "scales": [
+      "C major",
+      "A harmonic minor",
+      "A melodic minor",
+      "G major",
+      "E harmonic minor",
+      "E melodic minor",
+      "F major",
+      "D harmonic minor",
+      "D meloidc minor",
+      "D major",
+      "B harmonic minor",
+      "Bb major",
+      "G harmonic minor"
+    ],
+    "chromatic": "D chromatic",
+    "blues": "C blues",
+    "arpeggios": [
+      "C major",
+      "A minor",
+      "G major",
+      "E minor",
+      "F major",
+      "D minor",
+      "D major",
+      "B minor",
+      "Bb major",
+      "G minor"
+    ]
+  },
+  "4": {
+    "scales": [
+        "D major",
+        "B harmonic minor",
+        "B melodic minor",
+        "Bb major",
+        "G harmonic minor",
+        "G melodic minor",
+        "A major",
+        "F# harmonic minor",
+        "Eb major",
+        "C harmonic minor"
+    ],
+    "chromatic": "E chromatic",
+    "blues": "A blues",
+    "arpeggios": [
+        "D major",
+        "B minor",
+        "Bb major",
+        "G minor",
+        "A major",
+        "F# minor",
+        "Eb major",
+        "C minor"
+    ]
+  }
+}
