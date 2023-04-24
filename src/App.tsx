@@ -8,8 +8,12 @@ import {
   Radio,
   Layout,
   Space,
-  Slider,
   Switch,
+  Modal,
+  Checkbox,
+  Row,
+  Col,
+  Tag,
 } from "antd";
 import scalesData from "./lib/amebRequirements.json";
 import scales from "./lib/scales.json";
@@ -33,16 +37,30 @@ type Scales = {
 };
 
 function App() {
+  const [isCustom, setIsCustom] = useState<boolean>(false);
   const [selectedGrade, setSelectedGrade] = useState<string>("1");
   const [currentScaleIndex, setCurrentScaleIndex] = useState<number>(0);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const majors = Object.keys(scales).filter((scale) => scale.includes("major"));
+  const minor = Object.keys(scales).filter((scale) => scale.includes("minor"));
+  const [currentView, setCurrentView] = useState("major");
   const handleGradeChange = (value: string) => {
-    setSelectedGrade(value);
-    setCurrentScaleIndex(0); // reset scale index when grade changes
+    if (value === "custom") {
+      setIsCustom(true);
+      setIsModalVisible(true);
+    } else {
+      setSelectedGrade(value);
+      setIsCustom(false);
+      setCurrentScaleIndex(0);
+    }
   };
+  const [customScales, setCustomScales] = useState<string[]>([]);
   const { darkMode, setDarkMode } = useDarkMode();
-  const currentScales = (scalesData as ScalesData)[selectedGrade].scales;
+  const currentScales = isCustom
+    ? customScales
+    : (scalesData as ScalesData)[selectedGrade].scales;
+
   const currentScaleName = currentScales[currentScaleIndex];
-  const currentScale = (scales as Scales)[currentScaleName];
   const [showHint, setShowHint] = useState<boolean>(false);
   const [hint, setHint] = useState<string>("");
   const [randomScale, setRandomScale] = useState<boolean>(false);
@@ -57,7 +75,6 @@ function App() {
       nextScaleIndex = (currentScaleIndex + 1) % currentScales.length;
     }
     const nextScaleName = currentScales[nextScaleIndex];
-    const nextScale = (scales as Scales)[nextScaleName];
     setCurrentScaleIndex(nextScaleIndex);
     updateHint(nextScaleName);
   };
@@ -66,48 +83,32 @@ function App() {
     scaleName: string,
     alteration: "harmonic" | "melodic"
   ) => {
-    // remove alteration from scale name
     const scale = scaleName.replace(` ${alteration}`, "");
     let scaleNotes = (scales as Scales)[scale].split(" ");
 
     if (alteration === "harmonic") {
-      // raise the 7th by 1 semitone
-      const seventhIndex = scaleNotes.findIndex((note) => note.endsWith("7"));
-      if (seventhIndex !== -1) {
-        const alteredNote = raiseNoteBySemitone(scaleNotes[seventhIndex]);
-        scaleNotes[seventhIndex] = alteredNote;
-      }
+      const alteredNote = raiseNoteBySemitone(scaleNotes[6]);
+      scaleNotes[6] = alteredNote;
     } else if (alteration === "melodic") {
-      // raise the 6th and 7th by 1 semitone
-      const sixthIndex = scaleNotes.findIndex((note) => note.endsWith("6"));
-      const seventhIndex = scaleNotes.findIndex((note) => note.endsWith("7"));
-      if (sixthIndex !== -1) {
-        const alteredNote = raiseNoteBySemitone(scaleNotes[sixthIndex]);
-        scaleNotes[sixthIndex] = alteredNote;
-      }
-      if (seventhIndex !== -1) {
-        const alteredNote = raiseNoteBySemitone(scaleNotes[seventhIndex]);
-        scaleNotes[seventhIndex] = alteredNote;
-      }
+      const alteredNoteSix = raiseNoteBySemitone(scaleNotes[5]);
+      const alteredNoteSeventh = raiseNoteBySemitone(scaleNotes[6]);
+
+      scaleNotes[5] = alteredNoteSix;
+      scaleNotes[6] = alteredNoteSeventh;
     }
 
-    // function to raise a note by 1 semitone
     function raiseNoteBySemitone(note: string): string {
       if (note.includes("b")) {
-        // if note has a flat, raise it to natural
         const naturalNote = note[0];
         return naturalNote + "#";
       } else {
-        // if note is natural, raise it to sharp
         return note + "#";
       }
     }
-
     return scaleNotes.toString().replaceAll(",,", ",").replaceAll(" ", "");
   };
 
   const updateHint = (scaleName: string) => {
-    console.log(scaleName);
     if (scaleName.includes("harmonic")) {
       setHint(getAlteredScale(scaleName, "harmonic"));
     } else if (scaleName.includes("melodic")) {
@@ -171,6 +172,16 @@ function App() {
                   {grade}
                 </Option>
               ))}
+              <Option key="custom" value="custom">
+                Custom{" "}
+                <Button
+                  type="text"
+                  onClick={() => setIsModalVisible(true)}
+                  style={{ margin: "0", padding: "0", marginLeft: "4px" }}
+                >
+                  Edit
+                </Button>
+              </Option>
             </Select>
 
             <Radio.Group
@@ -196,11 +207,11 @@ function App() {
             </Typography.Text>
             <Space>
               <Button onClick={handleHint}>Hint</Button>
-
               <Button onClick={handleNextScale}>Next</Button>
               <Button
                 onClick={() => {
                   setCurrentScaleIndex(0);
+                  updateHint(currentScales[0]);
                 }}
               >
                 Reset
@@ -218,6 +229,102 @@ function App() {
           </Space>
         </Layout>
       </Card>
+      <Modal
+        open={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        onOk={() => {
+          setIsModalVisible(false);
+        }}
+        footer={
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                setCustomScales([]);
+              }}
+            >
+              Clear
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                setIsModalVisible(false);
+              }}
+            >
+              Close
+            </Button>
+          </div>
+        }
+      >
+        <Layout style={{ background: "none" }}>
+          <Typography.Title> Scale Select </Typography.Title>
+          <Space direction="vertical">
+            <Select
+              defaultValue={"Major"}
+              onChange={(v) => {
+                setCurrentView(v);
+              }}
+              options={[
+                { value: "major", label: "Major" },
+                { value: "minor", label: "Minor" },
+              ]}
+            />
+            <Row>
+              <Col>
+                {currentView === "major" &&
+                  majors.map((major) => (
+                    <Checkbox
+                      key={major}
+                      checked={customScales.includes(major)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setCustomScales([...customScales, major]);
+                        } else {
+                          setCustomScales(
+                            customScales.filter((scale) => scale !== major)
+                          );
+                        }
+                      }}
+                    >
+                      {major}
+                    </Checkbox>
+                  ))}
+              </Col>
+            </Row>
+
+            <Row>
+              <Col>
+                {currentView === "minor" &&
+                  minor.map((minor) => (
+                    <Checkbox
+                      key={minor}
+                      checked={customScales.includes(minor)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setCustomScales([...customScales, minor]);
+                        } else {
+                          setCustomScales(
+                            customScales.filter((scale) => scale !== minor)
+                          );
+                        }
+                      }}
+                    >
+                      {minor}
+                    </Checkbox>
+                  ))}
+              </Col>
+            </Row>
+          </Space>
+          <Typography.Title level={3}>Custom Scales</Typography.Title>
+          <Row>
+            <Col>
+              {customScales.map((scale) => (
+                <Tag color="magenta">{scale}</Tag>
+              ))}
+            </Col>
+          </Row>
+        </Layout>
+      </Modal>
     </ConfigProvider>
   );
 }
