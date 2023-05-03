@@ -9,6 +9,8 @@ import {
   Layout,
   Select,
   Tooltip,
+  Col,
+  Row
 } from "antd";
 import { detect, get } from "@tonaljs/scale";
 import scalesData from "../lib/amebRequirements.json";
@@ -69,9 +71,8 @@ const TypeScaleChallenge: React.FC = () => {
     setSelectedGrade(value);
     setCurrentScaleIndex(0);
   };
-
   return (
-    <Card 
+    <Card
       title={<Button type="text" onClick={() => {
         messageApi.info("How to play: Enter the notes of the scale, separated by spaces. For example, C D E F G A B.")
       }}>Type Scale Challenge</Button>}
@@ -85,36 +86,59 @@ const TypeScaleChallenge: React.FC = () => {
     >
       {contextHolder}
       <Layout style={{ background: "none" }}>
-        <Select
-          defaultValue={selectedGrade}
-          onChange={handleGradeChange}
-          style={{ width: "100%" }}
-        >
-          {Object.keys(scalesData).map((grade) => (
-            <Option key={grade} value={grade}>
-              {grade}
-            </Option>
-          ))}
-        </Select>
-        <Typography.Text strong style={{ fontSize: "1.5rem" }}>
-          {currentScaleName} ({correctAnswers}/10)
-        </Typography.Text>
-        <Space>
-          <Input
-            value={userInput}
-            onChange={handleInputChange}
-            onPressEnter={handleSubmit}
-            style={{ width: "300px" }}
-          />
-          <Button type="primary" onClick={handleSubmit}>Submit</Button>
-          <Button onClick={handleReset}>Reset</Button>
-          <Tooltip title="Show hint">
-            <Button onClick={showHint}>Hint</Button>
-          </Tooltip>
-        </Space>
+        <Row gutter={[16, 16]} style={{ width: "100%" }}>
+          <Col xs={24} sm={12}>
+            <Select
+              defaultValue={selectedGrade}
+              onChange={handleGradeChange}
+              style={{ width: "100%" }}
+            >
+              {Object.keys(scalesData).map((grade) => (
+                <Option key={grade} value={grade}>
+                  {grade}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+          <Col xs={24} sm={12} style={{ textAlign: "center" }}>
+            <Typography.Text strong style={{ fontSize: "1.5rem" }}>
+              {currentScaleName} ({correctAnswers}/10)
+            </Typography.Text>
+          </Col>
+          <Col xs={24} sm={24}>
+            <Space direction="vertical" style={{ width: "100%" }}>
+              <Input
+                value={userInput}
+                onChange={handleInputChange}
+                onPressEnter={handleSubmit}
+                style={{ width: "100%" }}
+              />
+              <Row gutter={[8, 8]} justify="center">
+                <Col xs={12} sm={6}>
+                  <Button type="primary" onClick={handleSubmit} block>
+                    Submit
+                  </Button>
+                </Col>
+                <Col xs={12} sm={6}>
+                  <Button onClick={handleReset} block>
+                    Reset
+                  </Button>
+                </Col>
+                <Col xs={24} sm={6}>
+                  <Tooltip title="Show hint">
+                    <Button onClick={showHint} block>
+                      Hint
+                    </Button>
+                  </Tooltip>
+                </Col>
+              </Row>
+            </Space>
+          </Col>
+        </Row>
       </Layout>
     </Card>
   );
+  
 };
 
 export default TypeScaleChallenge;
