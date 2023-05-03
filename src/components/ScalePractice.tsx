@@ -3,7 +3,7 @@ import { Card, Typography, Select, Button, Radio, Layout, Space } from "antd";
 import scalesData from "../lib/amebRequirements.json";
 import scales from "../lib/scales.json";
 import CustomScaleModal from "./CustomScaleModal";
-
+import { get } from "@tonaljs/scale";
 const { Option } = Select;
 
 type ScalesData = {
@@ -47,47 +47,11 @@ const ScalePractice: React.FC = () => {
     updateHint(nextScaleName);
   };
 
-  const getAlteredScale = (
-    scaleName: string,
-    alteration: "harmonic" | "melodic"
-  ) => {
-    const scale = scaleName.replace(` ${alteration}`, "");
-    let scaleNotes = (scales as Scales)[scale].split(" ");
-
-    if (alteration === "harmonic") {
-      const seventhNote = raiseNoteBySemitone(scaleNotes[6]);
-      scaleNotes[6] = seventhNote;
-    } if (alteration === "melodic") {
-      const sixthNote = raiseNoteBySemitone(scaleNotes[5]);
-      const seventhNote = raiseNoteBySemitone(scaleNotes[6]);
-      scaleNotes[5] = sixthNote;
-      scaleNotes[6] = seventhNote;
-      // remove the extra "#" symbol in the sixth note
-      scaleNotes[5] = scaleNotes[5].replace(/#+/g, "");
-    }
-    
-
-    function raiseNoteBySemitone(note: string): string {
-      if (note.includes("b")) {
-        const naturalNote = note[0];
-        return naturalNote + "#";
-      } else {
-        return note + "#";
-      }
-    }
-    return scaleNotes.toString().replaceAll(",,", ",").replaceAll(" ", "");
-  };
-
   const updateHint = (scaleName: string) => {
-    if (scaleName.includes("harmonic")) {
-      setHint(getAlteredScale(scaleName, "harmonic"));
-    } else if (scaleName.includes("melodic")) {
-      setHint(getAlteredScale(scaleName, "melodic"));
-    } else {
-      setHint((scales as Scales)[scaleName].replaceAll(" ", ""));
-    }
+    const scale = get(scaleName);
+    const scaleNotes = scale.notes.join(" ");
+    setHint(scaleNotes);
   };
-
   const handleHint = () => {
     updateHint(currentScaleName);
     setShowHint(!showHint);
@@ -100,8 +64,11 @@ const ScalePractice: React.FC = () => {
       setSelectedGrade(value);
       setIsCustom(false);
       setCurrentScaleIndex(0);
+      const firstScaleName = (scalesData as ScalesData)[value].scales[0];
+      updateHint(firstScaleName); // Call updateHint with the first scale name of the new grade
     }
   };
+
   const totalAmountOfScales = currentScales.length;
   const currentScaleNumber = currentScaleIndex + 1;
 

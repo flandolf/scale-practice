@@ -9,7 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tonaljs/scale": "^4.12.0",
     "antd": "^5.4.2",
+    "music-scale": "^1.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

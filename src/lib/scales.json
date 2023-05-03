@@ -37,8 +37,8 @@
   "D# minor": "D♯, E♯, F♯, G♯, A♯, B♯, C♯",
   "E# major": "E♯, F♯, G♯, A♯, B♯, C♯, D♯",
   "E# minor": "E♯, F♯, G♯, A♯, B♯, C♯, D♯",
-  "F# major": "F♯, G♯, A♯, B♯, C♯, D♯, E♯",
-  "F# minor": "F♯, G♯, A♯, B♯, C♯, D♯, E♯",
-  "G# major": "G♯, A♯, B♯, C♯, D♯, E♯, F♯",
-  "G# minor": "G♯, A♯, B♯, C♯, D♯, E♯, F♯"
+  "F# major": "F♯, G♯, A#, B, C♯, D#, E#",
+  "F# minor": "F♯, G♯, A, B, C♯, D, E",
+  "G# major": "G♯, A♯, B♯, C♯, D♯, E♯, F♯♯",
+  "G# minor": "G♯, A♯, B♯, C♯, D♯, E, F♯"
 }
