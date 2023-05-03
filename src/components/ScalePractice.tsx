@@ -28,7 +28,6 @@ const ScalePractice: React.FC = () => {
   const currentScales = isCustom
     ? customScales
     : (scalesData as ScalesData)[selectedGrade].scales;
-
   const currentScaleName = currentScales[currentScaleIndex];
   const [showHint, setShowHint] = useState<boolean>(false);
   const [hint, setHint] = useState<string>("");
@@ -56,15 +55,17 @@ const ScalePractice: React.FC = () => {
     let scaleNotes = (scales as Scales)[scale].split(" ");
 
     if (alteration === "harmonic") {
-      const alteredNote = raiseNoteBySemitone(scaleNotes[6]);
-      scaleNotes[6] = alteredNote;
-    } else if (alteration === "melodic") {
-      const alteredNoteSix = raiseNoteBySemitone(scaleNotes[5]);
-      const alteredNoteSeventh = raiseNoteBySemitone(scaleNotes[6]);
-
-      scaleNotes[5] = alteredNoteSix;
-      scaleNotes[6] = alteredNoteSeventh;
+      const seventhNote = raiseNoteBySemitone(scaleNotes[6]);
+      scaleNotes[6] = seventhNote;
+    } if (alteration === "melodic") {
+      const sixthNote = raiseNoteBySemitone(scaleNotes[5]);
+      const seventhNote = raiseNoteBySemitone(scaleNotes[6]);
+      scaleNotes[5] = sixthNote;
+      scaleNotes[6] = seventhNote;
+      // remove the extra "#" symbol in the sixth note
+      scaleNotes[5] = scaleNotes[5].replace(/#+/g, "");
     }
+    
 
     function raiseNoteBySemitone(note: string): string {
       if (note.includes("b")) {

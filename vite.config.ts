@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import antdImportPlugin from "vite-plugin-antd-import";
 import viteCompression from "vite-plugin-compression";
 
 export default defineConfig({
@@ -8,7 +7,7 @@ export default defineConfig({
     react(),
     viteCompression({
       filter: /\.(js|mjs|json|css|html)$/i,
-      algorithm: "gzip",
+      algorithm: "brotliCompress",
     }),
   ],
   build: {
@@ -22,6 +21,7 @@ export default defineConfig({
         assetFileNames: "assets/[name].[hash][extname]",
       },
     },
+    chunkSizeWarningLimit: 1000,
   },
   base: "",
 });
