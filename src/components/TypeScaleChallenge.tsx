@@ -11,7 +11,6 @@ import {
   Tooltip,
   Col,
   Row,
-  Checkbox,
   Radio,
 } from "antd";
 import { detect, get } from "@tonaljs/scale";

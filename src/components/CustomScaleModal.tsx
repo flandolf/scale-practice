@@ -11,7 +11,7 @@ import {
   Typography,
   Tag,
 } from "antd";
-import scales from "../lib/scales.json";
+import { get } from "@tonaljs/scale";
 type CustomScaleModalProps = {
   isModalVisible: boolean;
   setIsModalVisible: (visible: boolean) => void;
@@ -25,10 +25,20 @@ const CustomScaleModal: React.FC<CustomScaleModalProps> = ({
   customScales,
   setCustomScales,
 }) => {
-  const majors = Object.keys(scales).filter((scale) => scale.includes("major"));
-  const minor = Object.keys(scales).filter((scale) => scale.includes("minor"));
-  const [currentView, setCurrentView] = useState("major");
+  const majors = get("C major")
+    .notes.map((note) => `${note} major`)
+    .sort();
+  const minors = get("C minor")
+    .notes.map((note) => `${note} minor`)
+    .sort();
+  const harmonics = get("C harmonic minor")
+    .notes.map((note) => `${note} harmonic minor`)
+    .sort();
+  const melodic = get("C melodic minor")
+    .notes.map((note) => `${note} melodic minor`)
+    .sort();
 
+  const [currentView, setCurrentView] = useState("major");
   return (
     <Modal
       open={isModalVisible}
@@ -59,71 +69,68 @@ const CustomScaleModal: React.FC<CustomScaleModalProps> = ({
     >
       <Layout style={{ background: "none" }}>
         <Typography.Title> Scale Select </Typography.Title>
+        <Select
+          defaultValue={"Major"}
+          onChange={(v) => {
+            setCurrentView(v);
+          }}
+          options={[
+            { value: "major", label: "Major" },
+            { value: "minor", label: "Minor" },
+            { value: "harmonic", label: "Harmonic Minor" },
+            { value: "melodic", label: "Melodic Minor" },
+          ]}
+        />
+        <div style={{ height: "10px" }} />
+        {[
+          { scales: majors, view: "major" },
+          { scales: minors, view: "minor" },
+          { scales: harmonics, view: "harmonic" },
+          { scales: melodic, view: "melodic" },
+        ].map(({ scales, view }) => (
+          <Space direction="vertical">
+            <Row gutter={[4, 4]}>
+              {currentView === view &&
+                scales.map((scale) => (
+                  <Col span={8}>
+                    <Checkbox
+                      checked={customScales.includes(scale)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setCustomScales([...customScales, scale]);
+                        } else {
+                          setCustomScales(
+                            customScales.filter((s) => s !== scale)
+                          );
+                        }
+                      }}
+                    >
+                      {scale}
+                    </Checkbox>
+                  </Col>
+                ))}
+            </Row>
+          </Space>
+        ))}
+        <Typography.Title level={3}>Selected Scales</Typography.Title>
         <Space direction="vertical">
-          <Select
-            defaultValue={"Major"}
-            onChange={(v) => {
-              setCurrentView(v);
-            }}
-            options={[
-              { value: "major", label: "Major" },
-              { value: "minor", label: "Minor" },
-            ]}
-          />
-          <Row>
-            <Col>
-              {currentView === "major" &&
-                majors.map((major) => (
-                  <Checkbox
-                    key={major}
-                    checked={customScales.includes(major)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setCustomScales([...customScales, major]);
-                      } else {
-                        setCustomScales(
-                          customScales.filter((scale) => scale !== major)
-                        );
-                      }
-                    }}
-                  >
-                    {major}
-                  </Checkbox>
-                ))}
-            </Col>
-          </Row>
-
-          <Row>
-            <Col>
-              {currentView === "minor" &&
-                minor.map((minor) => (
-                  <Checkbox
-                    key={minor}
-                    checked={customScales.includes(minor)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setCustomScales([...customScales, minor]);
-                      } else {
-                        setCustomScales(
-                          customScales.filter((scale) => scale !== minor)
-                        );
-                      }
-                    }}
-                  >
-                    {minor}
-                  </Checkbox>
-                ))}
-            </Col>
+          <Row gutter={[0, 4]}>
+            {customScales.map((scale) => (
+              <Col>
+                <Tag
+                  key={scale}
+                  closable
+                  color="magenta"
+                  onClose={() => {
+                    setCustomScales(customScales.filter((s) => s !== scale));
+                  }}
+                >
+                  {scale}
+                </Tag>
+              </Col>
+            ))}
           </Row>
         </Space>
-        <Typography.Title level={3}>Custom Scales</Typography.Title>
-        <Row>
-          <Col>
-            {customScales.map((scale) => (
-              <Tag color="magenta">{scale}</Tag>
-            ))}
-          </Col>
-        </Row>
       </Layout>
     </Modal>
   );

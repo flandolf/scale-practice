@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Card, Typography, Select, Button, Radio, Layout, Space } from "antd";
 import scalesData from "../lib/amebRequirements.json";
-import scales from "../lib/scales.json";
 import CustomScaleModal from "./CustomScaleModal";
 import { get } from "@tonaljs/scale";
 const { Option } = Select;
@@ -69,6 +68,16 @@ const ScalePractice: React.FC = () => {
     }
   };
 
+  const handleBack = () => {
+    if (currentScaleIndex === 0) {
+      setCurrentScaleIndex(totalAmountOfScales - 1);
+      updateHint(currentScales[totalAmountOfScales - 1]);
+    } else {
+      setCurrentScaleIndex(currentScaleIndex - 1);
+      updateHint(currentScales[currentScaleIndex - 1]);
+    }
+  };
+
   const totalAmountOfScales = currentScales.length;
   const currentScaleNumber = currentScaleIndex + 1;
 
@@ -110,7 +119,6 @@ const ScalePractice: React.FC = () => {
               </Button>
             </Option>
           </Select>
-
           <Radio.Group
             optionType="button"
             buttonStyle="solid"
@@ -120,7 +128,7 @@ const ScalePractice: React.FC = () => {
               { label: "Play in order", value: false },
               { label: "Play randomly", value: true },
             ]}
-          ></Radio.Group>
+          />
           <Typography.Text
             strong
             style={{
@@ -135,6 +143,7 @@ const ScalePractice: React.FC = () => {
           <Space>
             <Button onClick={handleHint}>Hint</Button>
             <Button onClick={handleNextScale}>Next</Button>
+            <Button onClick={handleBack}>Back</Button>
             <Button
               onClick={() => {
                 setCurrentScaleIndex(0);
