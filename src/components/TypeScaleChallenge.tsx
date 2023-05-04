@@ -10,7 +10,9 @@ import {
   Select,
   Tooltip,
   Col,
-  Row
+  Row,
+  Checkbox,
+  Radio,
 } from "antd";
 import { detect, get } from "@tonaljs/scale";
 import scalesData from "../lib/amebRequirements.json";
@@ -25,13 +27,18 @@ const TypeScaleChallenge: React.FC = () => {
   const [selectedGrade, setSelectedGrade] = useState<string>("1");
   const currentScales = (scalesData as any)[selectedGrade].scales;
   const currentScaleName = currentScales[currentScaleIndex];
-
+  const [currentMode, setCurrentMode] = useState<string>("random");
   const handleSubmit = () => {
     const detectedScales = detect(userInput.split(" "));
 
     if (detectedScales.includes(currentScaleName)) {
       messageApi.success("Correct!");
-      setCurrentScaleIndex((currentScaleIndex + 1) % currentScales.length);
+      if (currentMode === "random") {
+        const nextScaleIndex = Math.floor(Math.random() * currentScales.length);
+        setCurrentScaleIndex(nextScaleIndex);
+      } else {
+        setCurrentScaleIndex((currentScaleIndex + 1) % currentScales.length);
+      }
       setCorrectAnswers(correctAnswers + 1);
       setUserInput("");
       if (correctAnswers === 9) {
@@ -54,12 +61,12 @@ const TypeScaleChallenge: React.FC = () => {
     const scaleNotes = scale.notes as string[];
     let hint: string[] = [];
     scaleNotes.forEach((e) => {
-        if (e.includes("#")) {
-            hint.push(e);
-        } else {
-            return
-        }
-    })
+      if (e.includes("#")) {
+        hint.push(e);
+      } else {
+        return;
+      }
+    });
 
     messageApi.info(`Hint: ${hint.join(" ")}`);
   };
@@ -73,9 +80,18 @@ const TypeScaleChallenge: React.FC = () => {
   };
   return (
     <Card
-      title={<Button type="text" onClick={() => {
-        messageApi.info("How to play: Enter the notes of the scale, separated by spaces. For example, C D E F G A B.")
-      }}>Type Scale Challenge</Button>}
+      title={
+        <Button
+          type="text"
+          onClick={() => {
+            messageApi.info(
+              "How to play: Enter the notes of the scale, separated by spaces. For example, C D E F G A B."
+            );
+          }}
+        >
+          Type Scale Challenge
+        </Button>
+      }
       style={{
         display: "flex",
         flexDirection: "column",
@@ -102,7 +118,10 @@ const TypeScaleChallenge: React.FC = () => {
           </Col>
           <Col xs={24} sm={12} style={{ textAlign: "center" }}>
             <Typography.Text strong style={{ fontSize: "1.5rem" }}>
-              {currentScaleName} ({correctAnswers}/10)
+              {currentScaleName} {' '}
+            </Typography.Text>
+            <Typography.Text style={{ fontSize: "1rem" }}>
+              ({correctAnswers}/10)
             </Typography.Text>
           </Col>
           <Col xs={24} sm={24}>
@@ -113,6 +132,18 @@ const TypeScaleChallenge: React.FC = () => {
                 onPressEnter={handleSubmit}
                 style={{ width: "100%" }}
               />
+              <Row gutter={[16, 16]} style={{ width: "100%" }} justify="center">
+                <Radio.Group
+                  buttonStyle="solid"
+                  optionType="button"
+                  defaultValue={currentMode}
+                  options={[
+                    { label: "Random", value: "random" },
+                    { label: "Ascending", value: "ascending" },
+                  ]}
+                  onChange={(e) => setCurrentMode(e.target.value)}
+                />
+              </Row>
               <Row gutter={[8, 8]} justify="center">
                 <Col xs={12} sm={6}>
                   <Button type="primary" onClick={handleSubmit} block>
@@ -138,7 +169,6 @@ const TypeScaleChallenge: React.FC = () => {
       </Layout>
     </Card>
   );
-  
 };
 
 export default TypeScaleChallenge;
