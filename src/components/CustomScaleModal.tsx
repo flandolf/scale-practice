@@ -37,6 +37,12 @@ const CustomScaleModal: React.FC<CustomScaleModalProps> = ({
   const melodic = get("C melodic minor")
     .notes.map((note) => `${note} melodic minor`)
     .sort();
+  const blues = get("C blues")
+    .notes.map((note) => `${note} blues`)
+    .sort();
+  const chromatic = get("C chromatic")
+    .notes.map((note) => `${note} chromatic`)
+    .sort();
 
   const [currentView, setCurrentView] = useState("major");
   return (
@@ -79,6 +85,8 @@ const CustomScaleModal: React.FC<CustomScaleModalProps> = ({
             { value: "minor", label: "Minor" },
             { value: "harmonic", label: "Harmonic Minor" },
             { value: "melodic", label: "Melodic Minor" },
+            { value: "blues", label: "Blues" },
+            { value: "chromatic", label: "Chromatic" },
           ]}
         />
         <div style={{ height: "10px" }} />
@@ -87,6 +95,8 @@ const CustomScaleModal: React.FC<CustomScaleModalProps> = ({
           { scales: minors, view: "minor" },
           { scales: harmonics, view: "harmonic" },
           { scales: melodic, view: "melodic" },
+          { scales: blues, view: "blues" },
+          { scales: chromatic, view: "chromatic" },
         ].map(({ scales, view }) => (
           <Space direction="vertical">
             <Row gutter={[4, 4]}>

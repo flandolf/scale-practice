@@ -1,5 +1,4 @@
-import deps from './package.json' assert { type: "json" };
-
+import deps from "./package.json" assert { type: "json" };
 
 const { dependencies } = deps;
 

@@ -77,6 +77,7 @@ const ScalePractice: React.FC = () => {
   const totalAmountOfScales = currentScales.length;
   const currentScaleNumber = currentScaleIndex + 1;
 
+
   return (
     <Card
       title={<Typography.Title level={2}>Scales Practice</Typography.Title>}

@@ -12,6 +12,9 @@ import {
   Col,
   Row,
   Radio,
+  Modal,
+  Tag,
+  Checkbox,
 } from "antd";
 import { detect, get } from "@tonaljs/scale";
 import scalesData from "../lib/amebRequirements.json";
@@ -19,14 +22,64 @@ import scalesData from "../lib/amebRequirements.json";
 const { Option } = Select;
 
 const TypeScaleChallenge: React.FC = () => {
+  const [customScales, setCustomScales] = useState<string[]>([]);
+  const [isCustom, setIsCustom] = useState<boolean>(false);
+  const [currentView, setCurrentView] = useState<string>("major");
   const [correctAnswers, setCorrectAnswers] = useState<number>(0);
   const [messageApi, contextHolder] = message.useMessage();
   const [currentScaleIndex, setCurrentScaleIndex] = useState<number>(0);
   const [userInput, setUserInput] = useState<string>("");
   const [selectedGrade, setSelectedGrade] = useState<string>("1");
-  const currentScales = (scalesData as any)[selectedGrade].scales;
+  const currentScales = isCustom
+    ? customScales
+    : (scalesData as any)[selectedGrade].scales;
   const currentScaleName = currentScales[currentScaleIndex];
   const [currentMode, setCurrentMode] = useState<string>("random");
+  const [showScaleModal, setShowScaleModal] = useState<boolean>(false);
+  const [isCustomModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const getArpeggio = (scaleName: string) => {
+    const scale = get(scaleName);
+    const arpeggioNotes = [scale.notes[0], scale.notes[2], scale.notes[4]];
+    return arpeggioNotes;
+  };
+  
+  const majors = get("C major")
+    .notes.map((note) => `${note} major`)
+    .sort();
+
+  const minors = get("C minor")
+    .notes.map((note) => `${note} minor`)
+    .sort();
+
+  const harmonics = get("C harmonic minor")
+    .notes.map((note) => `${note} harmonic minor`)
+    .sort();
+
+  const melodic = get("C melodic minor")
+    .notes.map((note) => `${note} melodic minor`)
+    .sort();
+
+  const blues = get("C blues")
+    .notes.map((note) => `${note} blues`)
+    .sort();
+
+  const chromatic = get("C chromatic")
+    .notes.map((note) => `${note} chromatic`)
+    .sort();
+
+  const handleModalOk = () => {
+    setIsModalVisible(false);
+    if (isCustom) {
+      setSelectedGrade("custom");
+      if (currentMode == "random") {
+        const nextScaleIndex = Math.floor(Math.random() * currentScales.length);
+        setCurrentScaleIndex(nextScaleIndex);
+      } else {
+        setCurrentScaleIndex((currentScaleIndex + 1) % currentScales.length);
+      }
+    }
+  };
+
   const handleSubmit = () => {
     const detectedScales = detect(userInput.split(" "));
 
@@ -62,20 +115,37 @@ const TypeScaleChallenge: React.FC = () => {
     scaleNotes.forEach((e) => {
       if (e.includes("#")) {
         hint.push(e);
+      } else if (e.includes("b")) {
+        hint.push(e);
       } else {
         return;
       }
     });
+    if (hint.length === 0) {
+      hint = ["No accidentals"];
+    }
 
     messageApi.info(`Hint: ${hint.join(" ")}`);
   };
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserInput(event.target.value);
   };
-
+  const showScales = () => {
+    if (selectedGrade == "custom") {
+      setIsModalVisible(true);
+    } else {
+      setShowScaleModal(true);
+    }
+  };
   const handleGradeChange = (value: string) => {
-    setSelectedGrade(value);
-    setCurrentScaleIndex(0);
+    if (value != "custom") {
+      setSelectedGrade(value);
+      setCurrentScaleIndex(0);
+      setIsCustom(false);
+    } else {
+      setIsCustom(true);
+      setIsModalVisible(true);
+    }
   };
   return (
     <Card
@@ -101,8 +171,24 @@ const TypeScaleChallenge: React.FC = () => {
     >
       {contextHolder}
       <Layout style={{ background: "none" }}>
-        <Row gutter={[16, 16]} style={{ width: "100%" }}>
-          <Col xs={24} sm={12}>
+        <Space direction="vertical">
+          <Col style={{ textAlign: "center" }}>
+            <Typography.Text strong style={{ fontSize: "1.5rem" }}>
+              {currentScaleName}{" "}
+            </Typography.Text>
+            <Typography.Text style={{ fontSize: "1rem" }}>
+              ({correctAnswers}/{currentScales.length})
+            </Typography.Text>
+          </Col>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
             <Select
               defaultValue={selectedGrade}
               onChange={handleGradeChange}
@@ -113,59 +199,152 @@ const TypeScaleChallenge: React.FC = () => {
                   {grade}
                 </Option>
               ))}
+              <Option value="custom" key="custom">
+                Custom
+              </Option>
             </Select>
-          </Col>
-          <Col xs={24} sm={12} style={{ textAlign: "center" }}>
-            <Typography.Text strong style={{ fontSize: "1.5rem" }}>
-              {currentScaleName} {' '}
-            </Typography.Text>
-            <Typography.Text style={{ fontSize: "1rem" }}>
-              ({correctAnswers}/10)
-            </Typography.Text>
-          </Col>
-          <Col xs={24} sm={24}>
-            <Space direction="vertical" style={{ width: "100%" }}>
-              <Input
-                value={userInput}
-                onChange={handleInputChange}
-                onPressEnter={handleSubmit}
-                style={{ width: "100%" }}
-              />
-              <Row gutter={[16, 16]} style={{ width: "100%" }} justify="center">
-                <Radio.Group
-                  buttonStyle="solid"
-                  optionType="button"
-                  defaultValue={currentMode}
-                  options={[
-                    { label: "Random", value: "random" },
-                    { label: "Ascending", value: "ascending" },
-                  ]}
-                  onChange={(e) => setCurrentMode(e.target.value)}
-                />
-              </Row>
-              <Row gutter={[8, 8]} justify="center">
-                <Col xs={12} sm={6}>
-                  <Button type="primary" onClick={handleSubmit} block>
-                    Submit
-                  </Button>
-                </Col>
-                <Col xs={12} sm={6}>
-                  <Button onClick={handleReset} block>
-                    Reset
-                  </Button>
-                </Col>
-                <Col xs={24} sm={6}>
-                  <Tooltip title="Show hint">
-                    <Button onClick={showHint} block>
-                      Hint
-                    </Button>
-                  </Tooltip>
-                </Col>
+            <Button
+              type="primary"
+              onClick={showScales}
+              style={{ marginLeft: "0.5rem" }}
+            >
+              {isCustom ? "Edit" : "Show"}
+            </Button>
+          </div>
+
+          <Input
+            value={userInput}
+            onChange={handleInputChange}
+            onPressEnter={handleSubmit}
+            placeholder="e.g C D E F G A B"
+            style={{ width: "100%" }}
+          />
+          <Radio.Group
+            buttonStyle="solid"
+            optionType="button"
+            defaultValue={currentMode}
+            options={[
+              { label: "Random", value: "random" },
+              { label: "Ascending", value: "ascending" },
+            ]}
+            onChange={(e) => setCurrentMode(e.target.value)}
+          />
+          <Button type="primary" onClick={handleSubmit} block>
+            Submit
+          </Button>
+          <Button onClick={showHint} type="primary" block>
+            Hint
+          </Button>
+          <Button onClick={handleReset} type="primary" block danger>
+            Reset
+          </Button>
+        </Space>
+      </Layout>
+      <Modal
+        open={showScaleModal}
+        onCancel={() => setShowScaleModal(false)}
+        onOk={() => setShowScaleModal(false)}
+      >
+        <Typography.Title level={2}>Scales</Typography.Title>
+        <Space direction="vertical">
+          <Row gutter={[0, 4]}>
+            {currentScales.sort().map((scale: string) => (
+              <Col>
+                <Tag color="magenta">{scale}</Tag>
+              </Col>
+            ))}
+          </Row>
+        </Space>
+        <div style={{ height: "10px" }} />
+        <Typography.Text>Total amount: {currentScales.length} </Typography.Text>
+      </Modal>
+      <Modal
+        open={isCustomModalVisible}
+        footer={[
+          <div>
+            <Button
+              key="clear"
+              onClick={() => {
+                setCustomScales([]);
+              }}
+            >
+              Clear
+            </Button>
+            <Button key="submit" type="primary" onClick={handleModalOk}>
+              OK
+            </Button>
+          </div>,
+        ]}
+      >
+        <Layout style={{ background: "none" }}>
+          <Typography.Title level={2}> Scale Select </Typography.Title>
+          <Select
+            defaultValue={"Major"}
+            onChange={(v) => {
+              setCurrentView(v);
+            }}
+            options={[
+              { value: "major", label: "Major" },
+              { value: "minor", label: "Minor" },
+              { value: "harmonic", label: "Harmonic Minor" },
+              { value: "melodic", label: "Melodic Minor" },
+              { value: "blues", label: "Blues" },
+              { value: "chromatic", label: "Chromatic" },
+            ]}
+          />
+          <div style={{ height: "10px" }} />
+          {[
+            { scales: majors, view: "major" },
+            { scales: minors, view: "minor" },
+            { scales: harmonics, view: "harmonic" },
+            { scales: melodic, view: "melodic" },
+            { scales: blues, view: "blues" },
+            { scales: chromatic, view: "chromatic" },
+          ].map(({ scales, view }) => (
+            <Space direction="vertical">
+              <Row gutter={[4, 4]}>
+                {currentView === view &&
+                  scales.map((scale) => (
+                    <Col>
+                      <Checkbox
+                        checked={customScales.includes(scale)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setCustomScales([...customScales, scale]);
+                          } else {
+                            setCustomScales(
+                              customScales.filter((s) => s !== scale)
+                            );
+                          }
+                        }}
+                      >
+                        {scale}
+                      </Checkbox>
+                    </Col>
+                  ))}
               </Row>
             </Space>
-          </Col>
-        </Row>
-      </Layout>
+          ))}
+          <Typography.Title level={3}>Selected Scales</Typography.Title>
+          <Space direction="vertical">
+            <Row gutter={[0, 4]}>
+              {customScales.map((scale) => (
+                <Col>
+                  <Tag
+                    closable
+                    onClose={() =>
+                      setCustomScales(customScales.filter((s) => s !== scale))
+                    }
+                    color="magenta"
+                  >
+                    {scale}
+                  </Tag>
+                </Col>
+              ))}
+            </Row>
+          </Space>
+        </Layout>
+      </Modal>
     </Card>
   );
 };
