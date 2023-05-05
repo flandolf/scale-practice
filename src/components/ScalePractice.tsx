@@ -14,10 +14,6 @@ type ScalesData = {
   };
 };
 
-type Scales = {
-  [scale: string]: string;
-};
-
 const ScalePractice: React.FC = () => {
   const [isCustom, setIsCustom] = useState<boolean>(false);
   const [selectedGrade, setSelectedGrade] = useState<string>("1");
