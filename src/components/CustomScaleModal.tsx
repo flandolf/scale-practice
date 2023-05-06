@@ -31,7 +31,7 @@ const CustomScaleModal: React.FC<CustomScaleModalProps> = ({
   const minors = get("C minor")
     .notes.map((note) => `${note} minor`)
     .sort();
-  const harmonics = get("C harmonic minor")
+  const harmonic = get("C harmonic minor")
     .notes.map((note) => `${note} harmonic minor`)
     .sort();
   const melodic = get("C melodic minor")
@@ -90,15 +90,15 @@ const CustomScaleModal: React.FC<CustomScaleModalProps> = ({
           ]}
         />
         <div style={{ height: "10px" }} />
-        {[
-          { scales: majors, view: "major" },
-          { scales: minors, view: "minor" },
-          { scales: harmonics, view: "harmonic" },
-          { scales: melodic, view: "melodic" },
-          { scales: blues, view: "blues" },
-          { scales: chromatic, view: "chromatic" },
-        ].map(({ scales, view }) => (
-          <Space direction="vertical">
+        <Space>
+          {[
+            { scales: majors, view: "major" },
+            { scales: minors, view: "minor" },
+            { scales: harmonic, view: "harmonic" },
+            { scales: melodic, view: "melodic" },
+            { scales: blues, view: "blues" },
+            { scales: chromatic, view: "chromatic" },
+          ].map(({ scales, view }) => (
             <Row gutter={[4, 4]}>
               {currentView === view &&
                 scales.map((scale) => (
@@ -120,12 +120,12 @@ const CustomScaleModal: React.FC<CustomScaleModalProps> = ({
                   </Col>
                 ))}
             </Row>
-          </Space>
-        ))}
+          ))}
+        </Space>
         <Typography.Title level={3}>Selected Scales</Typography.Title>
         <Space direction="vertical">
           <Row gutter={[0, 4]}>
-            {customScales.map((scale) => (
+            {customScales.map((scale, i) => (
               <Col>
                 <Tag
                   key={scale}

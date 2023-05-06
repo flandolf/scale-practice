@@ -24,8 +24,8 @@ const ScalePractice: React.FC = () => {
     ? customScales
     : (scalesData as ScalesData)[selectedGrade].scales;
   const currentScaleName = currentScales[currentScaleIndex];
-  const [showHint, setShowHint] = useState<boolean>(false);
-  const [hint, setHint] = useState<string>("");
+  const [showScale, setShowScale] = useState<boolean>(false);
+  const [scaleNotes, setScaleNotes] = useState<string>("");
   const [randomScale, setRandomScale] = useState<boolean>(false);
   const handleNextScale = () => {
     let nextScaleIndex;
@@ -39,17 +39,17 @@ const ScalePractice: React.FC = () => {
     }
     const nextScaleName = currentScales[nextScaleIndex];
     setCurrentScaleIndex(nextScaleIndex);
-    updateHint(nextScaleName);
+    updateScale(nextScaleName);
   };
 
-  const updateHint = (scaleName: string) => {
+  const updateScale = (scaleName: string) => {
     const scale = get(scaleName);
     const scaleNotes = scale.notes.join(" ");
-    setHint(scaleNotes);
+    setScaleNotes(scaleNotes);
   };
-  const handleHint = () => {
-    updateHint(currentScaleName);
-    setShowHint(!showHint);
+  const handleShowScale = () => {
+    updateScale(currentScaleName);
+    setShowScale(!showScale);
   };
   const handleGradeChange = (value: string) => {
     if (value === "custom") {
@@ -60,23 +60,22 @@ const ScalePractice: React.FC = () => {
       setIsCustom(false);
       setCurrentScaleIndex(0);
       const firstScaleName = (scalesData as ScalesData)[value].scales[0];
-      updateHint(firstScaleName); // Call updateHint with the first scale name of the new grade
+      updateScale(firstScaleName);
     }
   };
 
   const handleBack = () => {
     if (currentScaleIndex === 0) {
       setCurrentScaleIndex(totalAmountOfScales - 1);
-      updateHint(currentScales[totalAmountOfScales - 1]);
+      updateScale(currentScales[totalAmountOfScales - 1]);
     } else {
       setCurrentScaleIndex(currentScaleIndex - 1);
-      updateHint(currentScales[currentScaleIndex - 1]);
+      updateScale(currentScales[currentScaleIndex - 1]);
     }
   };
 
   const totalAmountOfScales = currentScales.length;
   const currentScaleNumber = currentScaleIndex + 1;
-
 
   return (
     <Card
@@ -138,25 +137,25 @@ const ScalePractice: React.FC = () => {
             </Typography.Text>
           </Typography.Text>
           <Space>
-            <Button onClick={handleHint}>Hint</Button>
+            <Button onClick={handleShowScale}>Show</Button>
             <Button onClick={handleNextScale}>Next</Button>
             <Button onClick={handleBack}>Back</Button>
             <Button
               onClick={() => {
                 setCurrentScaleIndex(0);
-                updateHint(currentScales[0]);
+                updateScale(currentScales[0]);
               }}
             >
               Reset
             </Button>
           </Space>
-          {showHint && (
+          {showScale && (
             <Typography.Text
               style={{
                 fontSize: "1.5rem",
               }}
             >
-              {hint}
+              {scaleNotes}
             </Typography.Text>
           )}
         </Space>
