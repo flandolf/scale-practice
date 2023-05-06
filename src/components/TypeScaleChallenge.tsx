@@ -22,27 +22,6 @@ import scalesData from "../lib/amebRequirements.json";
 const { Option } = Select;
 
 const TypeScaleChallenge: React.FC = () => {
-  const [customScales, setCustomScales] = useState<string[]>([]);
-  const [isCustom, setIsCustom] = useState<boolean>(false);
-  const [currentView, setCurrentView] = useState<string>("major");
-  const [correctAnswers, setCorrectAnswers] = useState<number>(0);
-  const [messageApi, contextHolder] = message.useMessage();
-  const [currentScaleIndex, setCurrentScaleIndex] = useState<number>(0);
-  const [userInput, setUserInput] = useState<string>("");
-  const [selectedGrade, setSelectedGrade] = useState<string>("1");
-  const currentScales = isCustom
-    ? customScales
-    : (scalesData as any)[selectedGrade].scales;
-  const currentScaleName = currentScales[currentScaleIndex];
-  const [currentMode, setCurrentMode] = useState<string>("random");
-  const [showScaleModal, setShowScaleModal] = useState<boolean>(false);
-  const [isCustomModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const getArpeggio = (scaleName: string) => {
-    const scale = get(scaleName);
-    const arpeggioNotes = [scale.notes[0], scale.notes[2], scale.notes[4]];
-    return arpeggioNotes;
-  };
-  
   const majors = get("C major")
     .notes.map((note) => `${note} major`)
     .sort();
@@ -67,6 +46,22 @@ const TypeScaleChallenge: React.FC = () => {
     .notes.map((note) => `${note} chromatic`)
     .sort();
 
+  const [customScales, setCustomScales] = useState<string[]>([]);
+  const [isCustom, setIsCustom] = useState<boolean>(false);
+  const [currentView, setCurrentView] = useState<string>("major");
+  const [correctAnswers, setCorrectAnswers] = useState<number>(0);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [currentScaleIndex, setCurrentScaleIndex] = useState<number>(0);
+  const [userInput, setUserInput] = useState<string>("");
+  const [selectedGrade, setSelectedGrade] = useState<string>("1");
+  const currentScales = isCustom
+    ? customScales
+    : (scalesData as any)[selectedGrade].scales;
+  const currentScaleName = currentScales[currentScaleIndex];
+  const [currentMode, setCurrentMode] = useState<string>("ascending");
+  const [showScaleModal, setShowScaleModal] = useState<boolean>(false);
+  const [isCustomModalVisible, setIsModalVisible] = useState<boolean>(false);
+
   const handleModalOk = () => {
     setIsModalVisible(false);
     if (isCustom) {
@@ -82,7 +77,6 @@ const TypeScaleChallenge: React.FC = () => {
 
   const handleSubmit = () => {
     const detectedScales = detect(userInput.split(" "));
-
     if (detectedScales.includes(currentScaleName)) {
       messageApi.success("Correct!");
       if (currentMode === "random") {
@@ -147,6 +141,7 @@ const TypeScaleChallenge: React.FC = () => {
       setIsModalVisible(true);
     }
   };
+
   return (
     <Card
       title={
@@ -248,7 +243,7 @@ const TypeScaleChallenge: React.FC = () => {
         <Typography.Title level={2}>Scales</Typography.Title>
         <Space direction="vertical">
           <Row gutter={[0, 4]}>
-            {currentScales.sort().map((scale: string) => (
+            {currentScales.map((scale: string) => (
               <Col>
                 <Tag color="magenta">{scale}</Tag>
               </Col>
