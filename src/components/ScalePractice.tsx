@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Typography, Select, Button, Radio, Layout, Space } from "antd";
 import scalesData from "../lib/amebRequirements.json";
 import CustomScaleModal from "./CustomScaleModal";
-import { get } from "@tonaljs/scale";
+import Scale, { get } from "@tonaljs/scale";
+import Note from "@tonaljs/note";
+import { Accidental, StaveNote, Vex, Voice } from "vexflow";
+import { useDarkMode } from "../lib/darkModeContext";
 const { Option } = Select;
 
 type ScalesData = {
@@ -15,6 +18,7 @@ type ScalesData = {
 };
 
 const ScalePractice: React.FC = () => {
+  const { darkMode } = useDarkMode();
   const [isCustom, setIsCustom] = useState<boolean>(false);
   const [selectedGrade, setSelectedGrade] = useState<string>("1");
   const [currentScaleIndex, setCurrentScaleIndex] = useState<number>(0);
@@ -53,11 +57,11 @@ const ScalePractice: React.FC = () => {
   };
   const handleGradeChange = (value: string) => {
     if (value === "custom") {
+      setCustomScales(["C major"]);
       setIsCustom(true);
-      setIsModalVisible(true);
     } else {
-      setSelectedGrade(value);
       setIsCustom(false);
+      setSelectedGrade(value);
       setCurrentScaleIndex(0);
       const firstScaleName = (scalesData as ScalesData)[value].scales[0];
       updateScale(firstScaleName);
@@ -73,19 +77,92 @@ const ScalePractice: React.FC = () => {
       updateScale(currentScales[currentScaleIndex - 1]);
     }
   };
-
   const totalAmountOfScales = currentScales.length;
   const currentScaleNumber = currentScaleIndex + 1;
+  const convertToVexFlowNotes = (): StaveNote[] => {
+    const notes = Scale.get(currentScaleName).notes;
+    const interval = Scale.get(currentScaleName).intervals;
+    let arr = [];
+    for (let i = 0; i < notes.length; i++) {
+      let note = Note.transpose(notes[0] + "4", interval[i]).toString();
+      if (note.includes("b") || note.includes("#")) {
+        note = note.split("")[0] + note.split("")[1] + "/" + note.split("")[2];
+      } else {
+        note = note.split("")[0] + "/" + note.split("")[1];
+      }
+      arr.push(note);
+    }
+    arr = arr.map((note) => {
+      if (note.includes("b")) {
+        return new Vex.Flow.StaveNote({
+          clef: "treble",
+          keys: [note],
+          duration: "q",
+          auto_stem: true,
+        }).addModifier(new Accidental("b"));
+      } else if (note.includes("#")) {
+        return new Vex.Flow.StaveNote({
+          clef: "treble",
+          keys: [note],
+          duration: "q",
+          auto_stem: true,
+        }).addModifier(new Accidental("#"));
+      }
+      return new Vex.Flow.StaveNote({
+        clef: "treble",
+        keys: [note],
+        duration: "q",
+        auto_stem: true,
+      });
+    });
+    return arr;
+  };
 
+  useEffect(() => {
+    const canvas = document.getElementById("vexflowout") as HTMLCanvasElement;
+    const context = canvas.getContext("2d")!;
+    canvas.width = 500;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    const renderer = new Vex.Flow.Renderer(
+      canvas,
+      Vex.Flow.Renderer.Backends.CANVAS
+    );
+
+    const stave = new Vex.Flow.Stave(0, 0, 480);
+    stave.addClef("treble").addTimeSignature("4/4");
+    // change color if dark mode
+    if (darkMode) {
+      renderer.getContext().fillStyle = "white";
+      renderer.getContext().strokeStyle = "white";
+    } else {
+      // change color to black
+      renderer.getContext().fillStyle = "black";
+      renderer.getContext().strokeStyle = "black";
+    }
+
+    if (!showScale) {
+      canvas.style.display = "none";
+    } else {
+      canvas.style.display = "block";
+    }
+
+    stave.setContext(renderer.getContext()).draw();
+
+    const notes = convertToVexFlowNotes();
+    const voice = new Voice({ num_beats: notes.length, beat_value: 4 });
+    voice.addTickables(notes);
+
+    const formatter = new Vex.Flow.Formatter();
+    formatter.joinVoices([voice]).format([voice], 400, { align_rests: true });
+    voice.draw(renderer.getContext(), stave);
+  }, [currentScaleName, darkMode, showScale]);
   return (
     <Card
       title={<Typography.Title level={2}>Scales Practice</Typography.Title>}
       style={{
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
       }}
     >
       <Layout
@@ -159,6 +236,17 @@ const ScalePractice: React.FC = () => {
             </Typography.Text>
           )}
         </Space>
+        <canvas
+          id="vexflowout"
+          style={{
+            width: "500px",
+          }}
+        />
+        <p>
+          Please note when selecting custom scales, make sure to have at least{" "}
+          <strong>1</strong> scale selected at any time or it will break. Sorry
+          for the inconvenience. Fix coming soon {">:)"}
+        </p>
       </Layout>
       <CustomScaleModal
         isModalVisible={isModalVisible}

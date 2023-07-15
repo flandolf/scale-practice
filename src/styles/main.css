@@ -3,8 +3,23 @@
   font-family: "Roboto", sans-serif;
   height: 100vh;
   width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+body {
+  margin: 0;
+  padding: 0;
+  color: #fff;
+}
+.header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  background: linear-gradient(45deg, #fd9d4e, #d840cb);
+  padding: 0 2rem;
+  height: 5vh;
+}
+
+ConfigProvider {
+  margin: 0;
+  padding: 0;
 }

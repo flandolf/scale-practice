@@ -159,9 +159,6 @@ const TypeScaleChallenge: React.FC = () => {
       style={{
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.1)",
       }}
     >
       {contextHolder}
