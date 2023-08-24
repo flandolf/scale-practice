@@ -26,15 +26,15 @@ const TypeScaleChallenge: React.FC = () => {
     .notes.map((note) => `${note} major`)
     .sort();
 
-  const minors = get("C minor")
+  const minors = get("C major")
     .notes.map((note) => `${note} minor`)
     .sort();
 
-  const harmonics = get("C harmonic minor")
+  const harmonics = get("C major")
     .notes.map((note) => `${note} harmonic minor`)
     .sort();
 
-  const melodic = get("C melodic minor")
+  const melodic = get("C major")
     .notes.map((note) => `${note} melodic minor`)
     .sort();
 
@@ -58,7 +58,7 @@ const TypeScaleChallenge: React.FC = () => {
     ? customScales
     : (scalesData as any)[selectedGrade].scales;
   const currentScaleName = currentScales[currentScaleIndex];
-  const [currentMode, setCurrentMode] = useState<string>("ascending");
+  const [currentMode, setCurrentMode] = useState<string>("random");
   const [showScaleModal, setShowScaleModal] = useState<boolean>(false);
   const [isCustomModalVisible, setIsModalVisible] = useState<boolean>(false);
 
@@ -145,16 +145,7 @@ const TypeScaleChallenge: React.FC = () => {
   return (
     <Card
       title={
-        <Button
-          type="text"
-          onClick={() => {
-            messageApi.info(
-              "How to play: Enter the notes of the scale, separated by spaces. For example, C D E F G A B."
-            );
-          }}
-        >
-          Type Scale Challenge
-        </Button>
+        <Typography.Title level={2}>Type Scale Challenge</Typography.Title>
       }
       style={{
         display: "flex",
@@ -164,8 +155,8 @@ const TypeScaleChallenge: React.FC = () => {
       {contextHolder}
       <Layout style={{ background: "none" }}>
         <Space direction="vertical">
-          <Col style={{ textAlign: "center" }}>
-            <Typography.Text strong style={{ fontSize: "1.5rem" }}>
+          <Col style={{ textAlign: "start" }}>
+            <Typography.Text strong style={{ fontSize: "2.5rem" }}>
               {currentScaleName}{" "}
             </Typography.Text>
             <Typography.Text style={{ fontSize: "1rem" }}>
@@ -211,25 +202,27 @@ const TypeScaleChallenge: React.FC = () => {
             placeholder="e.g C D E F G A B"
             style={{ width: "100%" }}
           />
-          <Radio.Group
-            buttonStyle="solid"
-            optionType="button"
-            defaultValue={currentMode}
-            options={[
-              { label: "Random", value: "random" },
-              { label: "Ascending", value: "ascending" },
-            ]}
-            onChange={(e) => setCurrentMode(e.target.value)}
-          />
-          <Button type="primary" onClick={handleSubmit} block>
-            Submit
-          </Button>
-          <Button onClick={showHint} type="primary" block>
-            Hint
-          </Button>
-          <Button onClick={handleReset} type="primary" block danger>
-            Reset
-          </Button>
+          <Space>
+            <Radio.Group
+              buttonStyle="solid"
+              optionType="button"
+              defaultValue={currentMode}
+              options={[
+                { label: "Random", value: "random" },
+                { label: "Ascending", value: "ascending" },
+              ]}
+              onChange={(e) => setCurrentMode(e.target.value)}
+            />
+            <Button type="primary" onClick={handleSubmit}>
+              Submit
+            </Button>
+            <Button onClick={showHint} type="primary">
+              Hint
+            </Button>
+            <Button onClick={handleReset} type="primary" danger>
+              Reset
+            </Button>
+          </Space>
         </Space>
       </Layout>
       <Modal

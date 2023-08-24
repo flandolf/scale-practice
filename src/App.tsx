@@ -4,12 +4,12 @@ import TypeScaleChallenge from "./components/TypeScaleChallenge";
 import { useDarkMode } from "./lib/darkModeContext";
 import {
   Layout,
-  Menu,
   theme,
   ConfigProvider,
   MenuProps,
-  Typography,
   Switch,
+  Radio,
+  Card,
 } from "antd";
 
 const { Header, Content, Sider } = Layout;
@@ -26,13 +26,13 @@ const items1: MenuProps["items"] = [
 ];
 function App() {
   const { darkMode, setDarkMode } = useDarkMode();
-  const [selectedComponent, setSelectedComponent] = useState("scalePractice");
+  const [selectedComponent, setSelectedComponent] = useState(1);
 
   const renderSelectedComponent = () => {
     switch (selectedComponent) {
-      case "1":
+      case 1:
         return <ScalePractice />;
-      case "2":
+      case 2:
         return <TypeScaleChallenge />;
       default:
         return <ScalePractice />;
@@ -48,41 +48,34 @@ function App() {
         },
       }}
     >
-      <Layout>
-        <div className="header">
-          <Typography.Text style={{ fontSize: "1.5rem" }}>
-            Scale Practice
-          </Typography.Text>
-          <Switch
-            checked={darkMode}
-            onChange={(checked) => setDarkMode(checked)}
-          />
-        </div>
-        <Layout>
-          <Sider width={200}>
-            <Menu
-              mode="inline"
-              defaultSelectedKeys={["1"]}
-              style={{ height: "100vh", borderRight: 0 }}
-              items={items1}
-              onSelect={(item) => setSelectedComponent(item.key)}
-            />
-          </Sider>
-          <Layout>
-            <Content
-              className="site-layout-background"
-              style={{
-                padding: 24,
-                margin: 0,
-                minHeight: 280,
-                height: "100vh",
-              }}
-            >
-              {renderSelectedComponent()}
-            </Content>
-          </Layout>
-        </Layout>
-      </Layout>
+      <Card 
+      title="Scale Practice"
+      style={{
+        margin: "10px",
+      }}>
+        <Switch
+          checked={darkMode}
+          onChange={() => setDarkMode(!darkMode)}
+          checkedChildren="Dark"
+          unCheckedChildren="Light"
+          style={{
+            margin: "10px",
+          }}
+        />
+
+        <Radio.Group
+          buttonStyle="solid"
+          optionType="button"
+          defaultValue={selectedComponent}
+          options={[
+            { label: "Scale Practice", value: 1 },
+            { label: "Type Scale Challenge", value: 2 },
+          ]}
+          onChange={(e) => setSelectedComponent(e.target.value)}
+        />
+        {renderSelectedComponent()}
+        <p>(c) 2023 andy wang</p>
+      </Card>
     </ConfigProvider>
   );
 }

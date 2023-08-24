@@ -10,6 +10,7 @@ import {
   Space,
   Typography,
   Tag,
+  message,
 } from "antd";
 import { get } from "@tonaljs/scale";
 type CustomScaleModalProps = {
@@ -25,6 +26,7 @@ const CustomScaleModal: React.FC<CustomScaleModalProps> = ({
   customScales,
   setCustomScales,
 }) => {
+  const [messageApi, contextHolder] = message.useMessage();
   const majors = get("C major")
     .notes.map((note) => `${note} major`)
     .sort();
@@ -57,7 +59,7 @@ const CustomScaleModal: React.FC<CustomScaleModalProps> = ({
           <Button
             type="primary"
             onClick={() => {
-              setCustomScales([]);
+              setCustomScales(["C major"]);
             }}
           >
             Clear
@@ -109,6 +111,12 @@ const CustomScaleModal: React.FC<CustomScaleModalProps> = ({
                         if (e.target.checked) {
                           setCustomScales([...customScales, scale]);
                         } else {
+                          if (customScales.length - 1 == 0) {
+                            messageApi.error(
+                              "You must select at least one scale"
+                            );
+                            return;
+                          }
                           setCustomScales(
                             customScales.filter((s) => s !== scale)
                           );
