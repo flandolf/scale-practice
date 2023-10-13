@@ -11,19 +11,7 @@ import {
   Radio,
   Card,
 } from "antd";
-
-const { Header, Content, Sider } = Layout;
 const { defaultAlgorithm, darkAlgorithm } = theme;
-const items1: MenuProps["items"] = [
-  {
-    key: "1",
-    label: "Scale Practice",
-  },
-  {
-    key: "2",
-    label: "Type Scale Challenge",
-  },
-];
 function App() {
   const { darkMode, setDarkMode } = useDarkMode();
   const [selectedComponent, setSelectedComponent] = useState(1);
