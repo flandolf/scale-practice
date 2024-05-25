@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { transpose } from "@tonaljs/note";
+import { Switch } from "./ui/switch";
 
 type ScalesData = {
   [grade: string]: {
@@ -172,6 +173,15 @@ const ScalePractice: React.FC = () => {
           ))}
         </SelectContent>
       </Select>
+      <div className="flex flex-row space-x-2">
+        <Switch
+          checked={randomScale}
+          onCheckedChange={(checked) => {
+            setRandomScale(checked);
+          }}
+        ></Switch>
+        <p>Random</p>
+      </div>
       <h1 className="text-3xl font-semibold">
         {currentScaleName}
         <span className="text-xl font-normal">
