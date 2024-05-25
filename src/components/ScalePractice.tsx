@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import scalesData from "../lib/scales.json";
 import Scale, { get } from "@tonaljs/scale";
-import Note from "@tonaljs/note";
-import { Accidental, StaveNote, Vex, Voice } from "vexflow";
+import Vex from "vexflow";
+const { Factory, EasyScore, System } = Vex.Flow;
 import {
   Select,
   SelectItem,
@@ -11,6 +11,7 @@ import {
   SelectContent,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { transpose } from "@tonaljs/note";
 
 type ScalesData = {
   [grade: string]: {
@@ -34,6 +35,9 @@ const ScalePractice: React.FC = () => {
   const [showScale, setShowScale] = useState<boolean>(false);
   const [scaleNotes, setScaleNotes] = useState<string>("");
   const [randomScale, setRandomScale] = useState<boolean>(false);
+
+  const totalAmountOfScales = currentScales.length;
+  const currentScaleNumber = currentScaleIndex + 1;
   const handleNextScale = () => {
     let nextScaleIndex;
     if (randomScale) {
@@ -80,79 +84,79 @@ const ScalePractice: React.FC = () => {
       updateScale(currentScales[currentScaleIndex - 1]);
     }
   };
-  const totalAmountOfScales = currentScales.length;
-  const currentScaleNumber = currentScaleIndex + 1;
-  const convertToVexFlowNotes = (): StaveNote[] => {
-    const notes = Scale.get(currentScaleName).notes;
-    const interval = Scale.get(currentScaleName).intervals;
-    let arr = [];
-    for (let i = 0; i < notes.length; i++) {
-      let note = Note.transpose(notes[0] + "4", interval[i]).toString();
-      if (note.includes("b") || note.includes("#")) {
-        note = note.split("")[0] + note.split("")[1] + "/" + note.split("")[2];
-      } else {
-        note = note.split("")[0] + "/" + note.split("")[1];
-      }
-      arr.push(note);
+
+  const renderVexTab = () => {
+    const elem = document.getElementById("vexbox");
+    if (elem) {
+      elem.innerHTML = "";
     }
-    arr = arr.map((note) => {
-      if (note.includes("b")) {
-        return new Vex.Flow.StaveNote({
-          clef: "treble",
-          keys: [note],
-          duration: "q",
-          auto_stem: true,
-        }).addModifier(new Accidental("b"));
-      } else if (note.includes("#")) {
-        return new Vex.Flow.StaveNote({
-          clef: "treble",
-          keys: [note],
-          duration: "q",
-          auto_stem: true,
-        }).addModifier(new Accidental("#"));
-      }
-      return new Vex.Flow.StaveNote({
-        clef: "treble",
-        keys: [note],
-        duration: "q",
-        auto_stem: true,
-      });
+    const vf = new Factory({
+      renderer: { elementId: "vexbox", width: 800, height: 200 },
     });
-    return arr;
+    const score = vf.EasyScore();
+    const system = vf.System();
+    score.set({ time: "7/4" });
+
+    let scaleFN = get(currentScaleName).notes[0] + "3";
+
+    switch (currentScaleName) {
+      case "C melodic minor":
+        scaleFN = "C4";
+        break;
+      case "C harmonic minor":
+        scaleFN = "C4";
+        break;
+      case "C# harmonic minor":
+        scaleFN = "C#4";
+        break;
+      case "C# melodic minor":
+        scaleFN = "C#4";
+        break;
+      case "E major":
+        scaleFN = "E4";
+        break;
+      case "Eb major":
+        scaleFN = "Eb4";
+        break;
+      
+    }
+
+    const interval = get(currentScaleName).intervals;
+    let scale = [];
+    scale.push(scaleFN);
+    for (let i = 1; i < interval.length; i++) {
+      scale.push(transpose(scaleFN, interval[i]));
+    }
+
+    let notes = scale
+      .map((note, index) => {
+        if (index === 0) {
+          return `${note}/q`;
+        } else {
+          return `${note}`;
+        }
+      })
+      .join(", ");
+
+    console.log(notes);
+
+    system
+      .addStave({
+        voices: [score.voice(score.notes(notes, { stem: "up" }))],
+      })
+      .addClef("treble")
+      .addTimeSignature("7/4")
+      .addKeySignature("C");
+
+    vf.getContext().fillStyle = "white";
+    vf.getContext().strokeStyle = "white";
+    vf.draw();
   };
 
   useEffect(() => {
-    const canvas = document.getElementById("vexflowout") as HTMLCanvasElement;
-    const context = canvas.getContext("2d")!;
-    canvas.width = 1920;
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    renderVexTab();
+  }, [currentScaleName]);
 
-    const renderer = new Vex.Flow.Renderer(
-      canvas,
-      Vex.Flow.Renderer.Backends.CANVAS
-    );
-
-    const stave = new Vex.Flow.Stave(0, 0, 480);
-    stave.addClef("treble").addTimeSignature("4/4");
-    
-    renderer.getContext().fillStyle = "white";
-    renderer.getContext().strokeStyle = "white";
-    if (!showScale) {
-      canvas.style.display = "none";
-    } else {
-      canvas.style.display = "block";
-    }
-
-    stave.setContext(renderer.getContext()).draw();
-
-    const notes = convertToVexFlowNotes();
-    const voice = new Voice({ num_beats: notes.length, beat_value: 4 });
-    voice.addTickables(notes);
-
-    const formatter = new Vex.Flow.Formatter();
-    formatter.joinVoices([voice]).format([voice], 400, { align_rests: true });
-    voice.draw(renderer.getContext(), stave);
-  }, [currentScaleName, showScale]);
   return (
     <div className="flex flex-col space-y-3 m-7">
       <h1 className="font-semibold text-5xl">Scale Practice</h1>
@@ -195,8 +199,16 @@ const ScalePractice: React.FC = () => {
           Reset
         </Button>
       </div>
-      <canvas id="vexflowout"></canvas>
-      <p>&copy; 2024 Andy Wang</p>
+
+      <div id="vexbox"></div>
+      {showScale && (
+        <div>
+          <h1 className="text-2xl font-semibold">Scale Notes</h1>
+          <p className="text-xl font-normal">{scaleNotes}</p>
+        </div>
+      )}
+
+      <p className="absolute bottom-8 left-8">&copy; 2024 Andy Wang</p>
     </div>
   );
 };

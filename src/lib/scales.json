@@ -91,5 +91,31 @@
       "Eb major",
       "C minor"
     ]
+  },
+  "5": {
+    "scales": [
+      "A major",
+      "F# harmonic minor",
+      "F# melodic minor",
+      "Eb major",
+      "C harmonic minor",
+      "C melodic minor",
+      "E major",
+      "C# harmonic minor",
+      "Ab major",
+      "F harmonic minor"
+    ],
+    "chromatic": "F chromatic",
+    "blues": "F blues",
+    "arpeggios": [
+      "A major",
+      "F# minor",
+      "Eb major",
+      "C minor",
+      "E major",
+      "C# minor",
+      "Ab major",
+      "F minor"
+    ]
   }
 }
