@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Card, Typography, Select, Button, Radio, Layout, Space } from "antd";
-import scalesData from "../lib/amebRequirements.json";
-import CustomScaleModal from "./CustomScaleModal";
+import scalesData from "../lib/scales.json";
 import Scale, { get } from "@tonaljs/scale";
 import Note from "@tonaljs/note";
 import { Accidental, StaveNote, Vex, Voice } from "vexflow";
-import { useDarkMode } from "../lib/darkModeContext";
-const { Option } = Select;
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 type ScalesData = {
   [grade: string]: {
@@ -18,7 +22,6 @@ type ScalesData = {
 };
 
 const ScalePractice: React.FC = () => {
-  const { darkMode } = useDarkMode();
   const [isCustom, setIsCustom] = useState<boolean>(false);
   const [selectedGrade, setSelectedGrade] = useState<string>("1");
   const [currentScaleIndex, setCurrentScaleIndex] = useState<number>(0);
@@ -121,7 +124,7 @@ const ScalePractice: React.FC = () => {
   useEffect(() => {
     const canvas = document.getElementById("vexflowout") as HTMLCanvasElement;
     const context = canvas.getContext("2d")!;
-    canvas.width = 500;
+    canvas.width = 1920;
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     const renderer = new Vex.Flow.Renderer(
@@ -131,16 +134,9 @@ const ScalePractice: React.FC = () => {
 
     const stave = new Vex.Flow.Stave(0, 0, 480);
     stave.addClef("treble").addTimeSignature("4/4");
-    // change color if dark mode
-    if (darkMode) {
-      renderer.getContext().fillStyle = "white";
-      renderer.getContext().strokeStyle = "white";
-    } else {
-      // change color to black
-      renderer.getContext().fillStyle = "black";
-      renderer.getContext().strokeStyle = "black";
-    }
-
+    
+    renderer.getContext().fillStyle = "white";
+    renderer.getContext().strokeStyle = "white";
     if (!showScale) {
       canvas.style.display = "none";
     } else {
@@ -156,105 +152,52 @@ const ScalePractice: React.FC = () => {
     const formatter = new Vex.Flow.Formatter();
     formatter.joinVoices([voice]).format([voice], 400, { align_rests: true });
     voice.draw(renderer.getContext(), stave);
-  }, [currentScaleName, darkMode, showScale]);
+  }, [currentScaleName, showScale]);
   return (
-    <Card
-      title={<Typography.Title level={2}>Scales Practice</Typography.Title>}
-      style={{
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <Layout
-        style={{
-          background: "none",
-        }}
-      >
-        <Space direction="vertical">
-          <Select
-            defaultValue={selectedGrade}
-            onChange={handleGradeChange}
-            style={{ width: "100%" }}
-          >
-            {Object.keys(scalesData).map((grade) => (
-              <Option key={grade} value={grade}>
-                {grade}
-              </Option>
-            ))}
-            <Option key="custom" value="custom">
-              Custom{" "}
-              <Button
-                type="text"
-                onClick={() => setIsModalVisible(true)}
-                style={{ margin: "0", padding: "0", marginLeft: "4px" }}
-              >
-                Edit
-              </Button>
-            </Option>
-          </Select>
-          <Radio.Group
-            optionType="button"
-            buttonStyle="solid"
-            onChange={(e) => setRandomScale(e.target.value)}
-            value={randomScale}
-            options={[
-              { label: "Play in order", value: false },
-              { label: "Play randomly", value: true },
-            ]}
-          />
-          <Typography.Text
-            strong
-            style={{
-              fontSize: "1.5rem",
-            }}
-          >
-            {currentScaleName}{" "}
-            <Typography.Text type="secondary">
-              {currentScaleNumber}/{totalAmountOfScales}
-            </Typography.Text>
-          </Typography.Text>
-          <Space>
-            <Button onClick={handleShowScale}>Show</Button>
-            <Button onClick={handleNextScale}>Next</Button>
-            <Button onClick={handleBack}>Back</Button>
-            <Button
-              onClick={() => {
-                setCurrentScaleIndex(0);
-                updateScale(currentScales[0]);
-              }}
-            >
-              Reset
-            </Button>
-          </Space>
-          {showScale && (
-            <Typography.Text
-              style={{
-                fontSize: "1.5rem",
-              }}
-            >
-              {scaleNotes}
-            </Typography.Text>
-          )}
-        </Space>
-        <canvas
-          id="vexflowout"
-          style={{
-            width: "500px",
+    <div className="flex flex-col space-y-3 m-7">
+      <h1 className="font-semibold text-5xl">Scale Practice</h1>
+      <Select onValueChange={(value) => handleGradeChange(value)}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select Grade" />
+        </SelectTrigger>
+        <SelectContent>
+          {Object.keys(scalesData).map((grade) => (
+            <SelectItem key={grade} value={grade}>
+              Grade {grade}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <h1 className="text-3xl font-semibold">
+        {currentScaleName}
+        <span className="text-xl font-normal">
+          {" "}
+          ({currentScaleNumber}/{totalAmountOfScales})
+        </span>
+      </h1>
+      <div className="flex space-x-3">
+        <Button variant={"default"} onClick={handleBack}>
+          Back
+        </Button>
+        <Button variant={"default"} onClick={handleNextScale}>
+          Next
+        </Button>
+        <Button variant={"outline"} onClick={handleShowScale}>
+          Show Scale
+        </Button>
+        <Button
+          variant={"outline"}
+          onClick={() => {
+            setCurrentScaleIndex(0);
+            updateScale(currentScales[0]);
           }}
-        />
-        <p>
-          Please note when selecting custom scales, make sure to have at least{" "}
-          <strong>1</strong> scale selected at any time or it will break. Sorry
-          for the inconvenience. Fix coming soon {">:)"}
-        </p>
-      </Layout>
-      <CustomScaleModal
-        isModalVisible={isModalVisible}
-        setIsModalVisible={setIsModalVisible}
-        customScales={customScales}
-        setCustomScales={setCustomScales}
-      />
-    </Card>
+        >
+          Reset
+        </Button>
+      </div>
+      <canvas id="vexflowout"></canvas>
+      <p>&copy; 2024 Andy Wang</p>
+    </div>
   );
 };
 
