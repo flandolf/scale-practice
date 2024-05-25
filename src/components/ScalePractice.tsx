@@ -91,7 +91,7 @@ const ScalePractice: React.FC = () => {
       elem.innerHTML = "";
     }
     const vf = new Factory({
-      renderer: { elementId: "vexbox", width: 800, height: 200 },
+      renderer: { elementId: "vexbox", width: 800, height: 150 },
     });
     const score = vf.EasyScore();
     const system = vf.System();
@@ -118,7 +118,9 @@ const ScalePractice: React.FC = () => {
       case "Eb major":
         scaleFN = "Eb4";
         break;
-      
+      case "D major":
+        scaleFN = "D4";
+        break;
     }
 
     const interval = get(currentScaleName).intervals;
@@ -137,8 +139,6 @@ const ScalePractice: React.FC = () => {
         }
       })
       .join(", ");
-
-    console.log(notes);
 
     system
       .addStave({
@@ -200,7 +200,7 @@ const ScalePractice: React.FC = () => {
         </Button>
       </div>
 
-      <div id="vexbox"></div>
+      <div id="vexbox" style={{ display: showScale ? "block" : "none" }} />
       {showScale && (
         <div>
           <h1 className="text-2xl font-semibold">Scale Notes</h1>
