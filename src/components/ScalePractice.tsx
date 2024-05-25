@@ -160,7 +160,7 @@ const ScalePractice: React.FC = () => {
 
   return (
     <div className="flex flex-col space-y-3 m-7">
-      <h1 className="font-semibold text-5xl">Scale Practice</h1>
+      <h1 className="font-semibold text-7xl">Scale Practice</h1>
       <Select onValueChange={(value) => handleGradeChange(value)}>
         <SelectTrigger>
           <SelectValue placeholder="Select Grade" />
@@ -182,7 +182,7 @@ const ScalePractice: React.FC = () => {
         ></Switch>
         <p>Random</p>
       </div>
-      <h1 className="text-3xl font-semibold">
+      <h1 className="text-5xl font-semibold">
         {currentScaleName}
         <span className="text-xl font-normal">
           {" "}
@@ -213,8 +213,8 @@ const ScalePractice: React.FC = () => {
       <div id="vexbox" style={{ display: showScale ? "block" : "none" }} />
       {showScale && (
         <div>
-          <h1 className="text-2xl font-semibold">Scale Notes</h1>
-          <p className="text-xl font-normal">{scaleNotes}</p>
+          <h1 className="text-4xl font-semibold">Scale Notes</h1>
+          <p className="text-2xl font-normal">{scaleNotes}</p>
         </div>
       )}
 
