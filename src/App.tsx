@@ -1,8 +1,6 @@
-import ScalePractice from "./components/ScalePractice";
+import ScalePractice from "./components/scale-practice";
 function App() {
-  return (
-    <ScalePractice/>
-  );
+  return <ScalePractice />;
 }
 
 export default App;

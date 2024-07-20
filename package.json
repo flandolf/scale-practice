@@ -15,6 +15,7 @@
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-switch": "^1.0.3",
+    "@tonaljs/key": "^4.9.4",
     "@tonaljs/note": "^4.10.3",
     "@tonaljs/scale": "^4.12.6",
     "class-variance-authority": "^0.7.0",

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import scalesData from "../lib/scales.json";
 import Scale, { get } from "@tonaljs/scale";
-import Vex from "vexflow";
-const { Factory, EasyScore, System } = Vex.Flow;
+import Vex, { Formatter, Renderer, StaveNote } from "vexflow";
 import {
   Select,
   SelectItem,
@@ -11,8 +10,8 @@ import {
   SelectContent,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { transpose } from "@tonaljs/note";
 import { Switch } from "./ui/switch";
+import { minorKey } from "@tonaljs/key";
 
 type ScalesData = {
   [grade: string]: {
@@ -39,6 +38,99 @@ const ScalePractice: React.FC = () => {
 
   const totalAmountOfScales = currentScales.length;
   const currentScaleNumber = currentScaleIndex + 1;
+
+  // Function to render VexTab musical staff
+  const renderVexFlow = () => {
+    const vexflow = document.getElementById("vexbox") as
+      | HTMLCanvasElement
+      | HTMLDivElement;
+    vexflow.innerHTML = "";
+    if (!vexflow) return;
+    const renderer = new Renderer(vexflow, Renderer.Backends.SVG);
+    renderer.resize(1000, 400);
+    const context = renderer.getContext();
+    const stave = new Vex.Flow.Stave(10, 40, 800);
+    stave.addClef("treble");
+    if (currentScaleName.includes("minor")) {
+      stave.addKeySignature(
+        minorKey(get(currentScaleName).tonic ?? "C").relativeMajor
+      );
+    } else {
+      stave.addKeySignature(get(currentScaleName).tonic ?? "C");
+    }
+    context.strokeStyle = "#ffffff";
+    context.fillStyle = "#ffffff";
+
+    stave.setContext(context).draw();
+    console.log(currentScaleName);
+    let notes = [];
+    let a = currentScaleName.split(" ");
+    let n = [];
+    if (
+      currentScaleName.includes("harmonic") ||
+      currentScaleName.includes("melodic")
+    ) {
+      n = [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 18, 19, 20, 21,
+      ].map(Scale.degrees(`${a[0]}3 ${a[1]} ${a[2]}`));
+    } else {
+      n = [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 18, 19, 20, 21,
+      ].map(Scale.degrees(`${a[0]}3 ${a[1]}`));
+    }
+    for (let i = 0; i < n.length; i++) {
+      if (n[i].includes("#") || n[i].includes("b")) {
+        n[i] = n[i].split("")[0] + n[i].split("")[1] + "/" + n[i].split("")[2];
+      } else {
+        n[i] = n[i].split("")[0] + "/" + n[i].split("")[1];
+      }
+    }
+    for (let i = 0; i < n.length; i++) {
+      notes.push(
+        new StaveNote({
+          keys: [n[i]],
+          duration: "16",
+        })
+      );
+    }
+
+    const beams = Vex.Flow.Beam.generateBeams(notes);
+    Formatter.FormatAndDraw(context, stave, notes);
+    beams.forEach((b) => b.setContext(context).draw());
+  };
+
+  useEffect(() => {
+    renderVexFlow();
+  }, [currentScaleName]);
+
+  // Function to update scale notes based on currentScaleName
+  const updateScale = (scaleName: string) => {
+    const scale = get(scaleName);
+    const scaleNotes = scale.notes.join(" ");
+    setScaleNotes(scaleNotes);
+  };
+
+  // Handler for changing the selected grade
+  const handleGradeChange = (value: string) => {
+    if (value === "custom") {
+      setCustomScales(["C major"]);
+      setIsCustom(true);
+    } else {
+      setIsCustom(false);
+      setSelectedGrade(value);
+      setCurrentScaleIndex(0);
+      const firstScaleName = (scalesData as ScalesData)[value].scales[0];
+      updateScale(firstScaleName);
+    }
+  };
+
+  // Handler for showing the scale notes
+  const handleShowScale = () => {
+    updateScale(currentScaleName);
+    setShowScale(!showScale);
+  };
+
+  // Handler for navigating to the next scale
   const handleNextScale = () => {
     let nextScaleIndex;
     if (randomScale) {
@@ -54,28 +146,7 @@ const ScalePractice: React.FC = () => {
     updateScale(nextScaleName);
   };
 
-  const updateScale = (scaleName: string) => {
-    const scale = get(scaleName);
-    const scaleNotes = scale.notes.join(" ");
-    setScaleNotes(scaleNotes);
-  };
-  const handleShowScale = () => {
-    updateScale(currentScaleName);
-    setShowScale(!showScale);
-  };
-  const handleGradeChange = (value: string) => {
-    if (value === "custom") {
-      setCustomScales(["C major"]);
-      setIsCustom(true);
-    } else {
-      setIsCustom(false);
-      setSelectedGrade(value);
-      setCurrentScaleIndex(0);
-      const firstScaleName = (scalesData as ScalesData)[value].scales[0];
-      updateScale(firstScaleName);
-    }
-  };
-
+  // Handler for navigating to the previous scale
   const handleBack = () => {
     if (currentScaleIndex === 0) {
       setCurrentScaleIndex(totalAmountOfScales - 1);
@@ -86,81 +157,10 @@ const ScalePractice: React.FC = () => {
     }
   };
 
-  const renderVexTab = () => {
-    const elem = document.getElementById("vexbox");
-    if (elem) {
-      elem.innerHTML = "";
-    }
-    const vf = new Factory({
-      renderer: { elementId: "vexbox", width: 800, height: 150 },
-    });
-    const score = vf.EasyScore();
-    const system = vf.System();
-    score.set({ time: "7/4" });
-
-    let scaleFN = get(currentScaleName).notes[0] + "3";
-
-    switch (currentScaleName) {
-      case "C melodic minor":
-        scaleFN = "C4";
-        break;
-      case "C harmonic minor":
-        scaleFN = "C4";
-        break;
-      case "C# harmonic minor":
-        scaleFN = "C#4";
-        break;
-      case "C# melodic minor":
-        scaleFN = "C#4";
-        break;
-      case "E major":
-        scaleFN = "E4";
-        break;
-      case "Eb major":
-        scaleFN = "Eb4";
-        break;
-      case "D major":
-        scaleFN = "D4";
-        break;
-    }
-
-    const interval = get(currentScaleName).intervals;
-    let scale = [];
-    scale.push(scaleFN);
-    for (let i = 1; i < interval.length; i++) {
-      scale.push(transpose(scaleFN, interval[i]));
-    }
-
-    let notes = scale
-      .map((note, index) => {
-        if (index === 0) {
-          return `${note}/q`;
-        } else {
-          return `${note}`;
-        }
-      })
-      .join(", ");
-
-    system
-      .addStave({
-        voices: [score.voice(score.notes(notes, { stem: "up" }))],
-      })
-      .addClef("treble")
-      .addTimeSignature("7/4")
-      .addKeySignature("C");
-
-    vf.getContext().fillStyle = "white";
-    vf.getContext().strokeStyle = "white";
-    vf.draw();
-  };
-
-  useEffect(() => {
-    renderVexTab();
-  }, [currentScaleName]);
-
   return (
     <div className="flex flex-col space-y-3 m-7">
-      <h1 className="font-semibold text-7xl">Scale Practice</h1>
+      <h1 className="font-semibold text-7xl text-blue-400">Scale Practice</h1>
+      <h2>Exams Soon {">:("}</h2>
       <Select onValueChange={(value) => handleGradeChange(value)}>
         <SelectTrigger>
           <SelectValue placeholder="Select Grade" />
@@ -210,15 +210,9 @@ const ScalePractice: React.FC = () => {
         </Button>
       </div>
 
-      <div id="vexbox" style={{ display: showScale ? "block" : "none" }} />
-      {showScale && (
-        <div>
-          <h1 className="text-4xl font-semibold">Scale Notes</h1>
-          <p className="text-2xl font-normal">{scaleNotes}</p>
-        </div>
-      )}
-
-      <p className="absolute bottom-8 left-8">&copy; 2024 Andy Wang</p>
+      {/* Container for VexTab rendering */}
+      <div id="vexbox" style={{ display: showScale ? "flex" : "none" }} />
+      <p className="text-blue-300">&copy; 2024 Andy Wang</p>
     </div>
   );
 };
