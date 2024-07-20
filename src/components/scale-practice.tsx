@@ -47,9 +47,9 @@ const ScalePractice: React.FC = () => {
     vexflow.innerHTML = "";
     if (!vexflow) return;
     const renderer = new Renderer(vexflow, Renderer.Backends.SVG);
-    renderer.resize(1000, 400);
+    renderer.resize(800, 150); // Adjusted size for mobile
     const context = renderer.getContext();
-    const stave = new Vex.Flow.Stave(10, 40, 800);
+    const stave = new Vex.Flow.Stave(0, 0, 800); // Adjusted stave dimensions
     stave.addClef("treble");
     if (currentScaleName.includes("minor")) {
       stave.addKeySignature(
@@ -158,16 +158,18 @@ const ScalePractice: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col space-y-3 m-7">
-      <h1 className="font-semibold text-7xl text-blue-400">Scale Practice</h1>
-      <h2>Exams Soon {">:("}</h2>
+    <div className="flex flex-col space-y-3 m-10">
+      <h1 className="font-semibold sm:text-2xl md:text-8xl text-blue-400">
+        Scale Practice
+      </h1>
+      <h2 className="sm:text-sm md:text-2xl">Exams Soon {">:("}</h2>
       <Select onValueChange={(value) => handleGradeChange(value)}>
-        <SelectTrigger>
+        <SelectTrigger className="text-xl">
           <SelectValue placeholder="Select Grade" />
         </SelectTrigger>
         <SelectContent>
           {Object.keys(scalesData).map((grade) => (
-            <SelectItem key={grade} value={grade}>
+            <SelectItem className="text-xl" key={grade} value={grade}>
               Grade {grade}
             </SelectItem>
           ))}
@@ -180,11 +182,11 @@ const ScalePractice: React.FC = () => {
             setRandomScale(checked);
           }}
         ></Switch>
-        <p>Random</p>
+        <p className="text-xl">Random</p>
       </div>
-      <h1 className="text-5xl font-semibold">
+      <h1 className="sm:text-3xl md:text-6xl font-semibold">
         {currentScaleName}
-        <span className="text-xl font-normal">
+        <span className="text-2xl font-normal">
           {" "}
           ({currentScaleNumber}/{totalAmountOfScales})
         </span>
