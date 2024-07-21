@@ -105,6 +105,7 @@ const ScalePractice: React.FC = () => {
       notes[13].addModifier(new Accidental("#"));
     }
 
+
     const beams = Vex.Flow.Beam.generateBeams(notes);
     Formatter.FormatAndDraw(context, stave, notes);
     beams.forEach((b) => b.setContext(context).draw());
@@ -230,6 +231,9 @@ const ScalePractice: React.FC = () => {
         style={{ display: showScale ? "flex" : "none" }}
       />
       <p className="text-blue-300">&copy; 2024 Andy Wang</p>
+      <p className="text-blue-300">Made with {"<3"} in Melbourne</p>
+      <p className="text-blue-300">v3.5</p>
+      
     </div>
   );
 };
