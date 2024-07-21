@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import scalesData from "../lib/scales.json";
 import Scale, { get } from "@tonaljs/scale";
-import Vex, { Formatter, Renderer, StaveNote } from "vexflow";
+import Vex, { Accidental, Formatter, Renderer, StaveNote } from "vexflow";
 import {
   Select,
   SelectItem,
@@ -47,9 +47,9 @@ const ScalePractice: React.FC = () => {
     vexflow.innerHTML = "";
     if (!vexflow) return;
     const renderer = new Renderer(vexflow, Renderer.Backends.SVG);
-    renderer.resize(800, 150); // Adjusted size for mobile
+    renderer.resize(720, 150); // Adjusted size for mobile
     const context = renderer.getContext();
-    const stave = new Vex.Flow.Stave(0, 0, 800); // Adjusted stave dimensions
+    const stave = new Vex.Flow.Stave(10, 15, 700); // Adjusted stave dimensions
     stave.addClef("treble");
     if (currentScaleName.includes("minor")) {
       stave.addKeySignature(
@@ -58,11 +58,8 @@ const ScalePractice: React.FC = () => {
     } else {
       stave.addKeySignature(get(currentScaleName).tonic ?? "C");
     }
-    context.strokeStyle = "#ffffff";
-    context.fillStyle = "#ffffff";
 
     stave.setContext(context).draw();
-    console.log(currentScaleName);
     let notes = [];
     let a = currentScaleName.split(" ");
     let n = [];
@@ -71,11 +68,13 @@ const ScalePractice: React.FC = () => {
       currentScaleName.includes("melodic")
     ) {
       n = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 18, 19, 20, 21,
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21,
       ].map(Scale.degrees(`${a[0]}3 ${a[1]} ${a[2]}`));
     } else {
       n = [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 18, 19, 20, 21,
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21,
       ].map(Scale.degrees(`${a[0]}3 ${a[1]}`));
     }
     for (let i = 0; i < n.length; i++) {
@@ -92,6 +91,18 @@ const ScalePractice: React.FC = () => {
           duration: "16",
         })
       );
+    }
+
+    if (currentScaleName.includes("harmonic")) {
+      notes[6].addModifier(new Accidental("#"));
+    }
+
+    if (currentScaleName.includes("melodic")) {
+      notes[5].addModifier(new Accidental("#"));
+      notes[6].addModifier(new Accidental("#"));
+
+      notes[12].addModifier(new Accidental("#"));
+      notes[13].addModifier(new Accidental("#"));
     }
 
     const beams = Vex.Flow.Beam.generateBeams(notes);
@@ -213,7 +224,11 @@ const ScalePractice: React.FC = () => {
       </div>
 
       {/* Container for VexTab rendering */}
-      <div id="vexbox" style={{ display: showScale ? "flex" : "none" }} />
+      <div
+        id="vexbox"
+        className="bg-white flex rounded-xl w-min p-5"
+        style={{ display: showScale ? "flex" : "none" }}
+      />
       <p className="text-blue-300">&copy; 2024 Andy Wang</p>
     </div>
   );
