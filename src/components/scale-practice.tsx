@@ -26,14 +26,13 @@ const ScalePractice: React.FC = () => {
   const [isCustom, setIsCustom] = useState<boolean>(false);
   const [selectedGrade, setSelectedGrade] = useState<string>("1");
   const [currentScaleIndex, setCurrentScaleIndex] = useState<number>(0);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [customScales, setCustomScales] = useState<string[]>([]);
   const currentScales = isCustom
     ? customScales
     : (scalesData as ScalesData)[selectedGrade].scales;
   const currentScaleName = currentScales[currentScaleIndex];
   const [showScale, setShowScale] = useState<boolean>(false);
-  const [scaleNotes, setScaleNotes] = useState<string>("");
+  const [_scaleNotes, setScaleNotes] = useState<string>("");
   const [randomScale, setRandomScale] = useState<boolean>(false);
 
   const totalAmountOfScales = currentScales.length;
@@ -63,6 +62,7 @@ const ScalePractice: React.FC = () => {
     let notes = [];
     let a = currentScaleName.split(" ");
     let n = [];
+
     if (
       currentScaleName.includes("harmonic") ||
       currentScaleName.includes("melodic")
@@ -94,7 +94,9 @@ const ScalePractice: React.FC = () => {
     }
 
     if (currentScaleName.includes("harmonic")) {
-      notes[6].addModifier(new Accidental("#"));
+      notes[6].addModifier(new Accidental("#"));      
+      notes[12].addModifier(new Accidental("#"));
+      notes[18].addModifier(new Accidental("#"));
     }
 
     if (currentScaleName.includes("melodic")) {
@@ -103,8 +105,10 @@ const ScalePractice: React.FC = () => {
 
       notes[12].addModifier(new Accidental("#"));
       notes[13].addModifier(new Accidental("#"));
-    }
 
+      notes[18].addModifier(new Accidental("#"));
+      notes[19].addModifier(new Accidental("#"));
+    }
 
     const beams = Vex.Flow.Beam.generateBeams(notes);
     Formatter.FormatAndDraw(context, stave, notes);
@@ -196,7 +200,7 @@ const ScalePractice: React.FC = () => {
         ></Switch>
         <p className="text-xl">Random</p>
       </div>
-      <h1 className="sm:text-3xl md:text-6xl font-semibold">
+      <h1 className="sm:text-3xl md:text-7xl font-semibold pb-3">
         {currentScaleName}
         <span className="text-2xl font-normal">
           {" "}
@@ -230,10 +234,11 @@ const ScalePractice: React.FC = () => {
         className="bg-white flex rounded-xl w-min p-5"
         style={{ display: showScale ? "flex" : "none" }}
       />
-      <p className="text-blue-300">&copy; 2024 Andy Wang</p>
-      <p className="text-blue-300">Made with {"<3"} in Melbourne</p>
-      <p className="text-blue-300">v3.5</p>
-      
+      <div>
+        <p className="text-blue-300">&copy; 2024 Andy Wang</p>
+        <p className="text-blue-300">Made with {"<3"} in Melbourne</p>
+        <p className="text-blue-300">v3.5</p>
+      </div>
     </div>
   );
 };
