@@ -131,10 +131,12 @@ const ArpeggioSpeedChallenge: React.FC = () => {
       />
       <div className="flex-row space-x-4">
         <Button onClick={handleNext}>Next</Button>
-        <Button onClick={() => {
-          setStartTime(null);
-          setStarted(false);
-        }}>
+        <Button
+          onClick={() => {
+            setStartTime(null);
+            setStarted(false);
+          }}
+        >
           Pause
         </Button>
         <Button
@@ -146,7 +148,7 @@ const ArpeggioSpeedChallenge: React.FC = () => {
           }}
         >
           Reset
-        </Buttonutton>
+        </Button>
       </div>
 
       <div className="text-xl font-semibold">
