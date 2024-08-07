@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "./ui/switch";
 import { minorKey } from "@tonaljs/key";
+import { Link } from "react-router-dom";
 
 type ScalesData = {
   [grade: string]: {
@@ -174,10 +175,13 @@ const ScalePractice: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col space-y-3 p-10">
-      <h1 className="font-semibold sm:text-2xl md:text-8xl text-blue-400">
-        Scale Practice
+    <div className="flex flex-col space-y-4 p-10">
+      <h1 className="font-semibold sm:text-3xl md:text-5xl lg:text-7xl text-blue-400">
+        Scale Practice 🚀
       </h1>
+      <Link to="/arp">
+        <a className="text-blue-400">To Arpeggio Practice</a>
+      </Link>
       <h2 className="sm:text-sm md:text-2xl">Exams Soon {">:("}</h2>
       <Select onValueChange={(value) => handleGradeChange(value)}>
         <SelectTrigger className="text-xl">

@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import Scale, { get } from "@tonaljs/scale";
 import { Switch } from "./ui/switch";
+import { Link } from "react-router-dom";
 type ScalesData = {
   [grade: string]: {
     scales: string[];
@@ -94,8 +95,13 @@ const ArpeggioSpeedChallenge: React.FC = () => {
   };
 
   return (
-    <div className="p-10 flex flex-col w-full h-full space-y-3">
-      <h1 className="text-4xl font-semibold">Arpeggio Speed Challenge</h1>
+    <div className="p-10 flex flex-col w-full h-full space-y-4">
+      <h1 className="sm:text-3xl md:text-5xl lg:text-7xl font-semibold text-pink-500">
+        Arpeggio Speed Challenge 🎀
+      </h1>
+      <Link className="text-pink-400" to="/">
+        Back to Home
+      </Link>
       <div className="flex flex-row space-x-3">
         <Switch
           onCheckedChange={(e) => {
@@ -105,7 +111,7 @@ const ArpeggioSpeedChallenge: React.FC = () => {
         <p>Random?</p>
       </div>
       <Select onValueChange={(value) => setCurrentGrade(parseInt(value))}>
-        <SelectTrigger className="text-xl">
+        <SelectTrigger>
           <SelectValue placeholder="Select Grade" />
         </SelectTrigger>
         <SelectContent>
@@ -116,18 +122,25 @@ const ArpeggioSpeedChallenge: React.FC = () => {
           ))}
         </SelectContent>
       </Select>
-      <h1 className="text-3xl font-semibold">{currentScaleName}</h1>
-      <Input placeholder="Enter notes 1,3 and 5" onChange={handleInputChange} />
-      <Button onClick={handleNext}>Next</Button>
-      <Button
-        onClick={() => {
-          setTimes([]);
-          setStarted(false);
-          setStartTime(null);
-        }}
-      >
-        Reset
-      </Button>
+      <h1 className="sm:text-3xl md:text-5xl lg:text-7xl font-semibold text-pink-300">
+        {currentScaleName}
+      </h1>
+      <Input
+        placeholder="Enter notes 1, 3 and 5"
+        onChange={handleInputChange}
+      />
+      <div className="flex-row space-x-4">
+        <Button onClick={handleNext}>Next</Button>
+        <Button
+          onClick={() => {
+            setTimes([]);
+            setStarted(false);
+            setStartTime(null);
+          }}
+        >
+          Reset
+        </Button>
+      </div>
 
       <div className="text-xl font-semibold">
         Time elapsed: {(elapsedTime / 1000).toFixed(2)} seconds
