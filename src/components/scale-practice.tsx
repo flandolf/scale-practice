@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import scalesData from "../lib/scales.json";
+import scalesData from "@/lib/scales.json";
 import Scale, { get } from "@tonaljs/scale";
 import Vex, { Accidental, Formatter, Renderer, StaveNote } from "vexflow";
 import {
@@ -52,7 +52,7 @@ const ScalePractice: React.FC = () => {
     stave.addClef("treble");
     if (currentScaleName.includes("minor")) {
       stave.addKeySignature(
-        minorKey(get(currentScaleName).tonic ?? "C").relativeMajor
+        minorKey(get(currentScaleName).tonic ?? "C").relativeMajor,
       );
     } else {
       stave.addKeySignature(get(currentScaleName).tonic ?? "C");
@@ -89,12 +89,12 @@ const ScalePractice: React.FC = () => {
         new StaveNote({
           keys: [n[i]],
           duration: "16",
-        })
+        }),
       );
     }
 
     if (currentScaleName.includes("harmonic")) {
-      notes[6].addModifier(new Accidental("#"));      
+      notes[6].addModifier(new Accidental("#"));
       notes[12].addModifier(new Accidental("#"));
       notes[18].addModifier(new Accidental("#"));
     }
@@ -174,7 +174,7 @@ const ScalePractice: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col space-y-3 m-10">
+    <div className="flex flex-col space-y-3 p-10">
       <h1 className="font-semibold sm:text-2xl md:text-8xl text-blue-400">
         Scale Practice
       </h1>
