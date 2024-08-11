@@ -95,11 +95,11 @@ const ArpeggioSpeedChallenge: React.FC = () => {
   };
 
   return (
-    <div className="p-10 flex flex-col w-full h-full space-y-4">
-      <h1 className="sm:text-3xl md:text-5xl lg:text-7xl font-semibold text-pink-500">
+    <div className="p-6 lg:p-10 flex flex-col w-full h-full space-y-3 lg:space-y-4">
+      <h1 className="text-6xl lg:text-7xl font-semibold text-pink-500">
         Arpeggio Speed Challenge 🎀
       </h1>
-      <Link className="text-pink-400" to="/">
+      <Link className="text-blue-300" to="/">
         Back to Home
       </Link>
       <div className="flex flex-row space-x-3">
@@ -122,7 +122,7 @@ const ArpeggioSpeedChallenge: React.FC = () => {
           ))}
         </SelectContent>
       </Select>
-      <h1 className="sm:text-3xl md:text-5xl lg:text-7xl font-semibold text-pink-300">
+      <h1 className="text-5xl lg:text-7xl font-semibold text-pink-300">
         {currentScaleName}
       </h1>
       <Input
@@ -157,7 +157,7 @@ const ArpeggioSpeedChallenge: React.FC = () => {
       {times.map(
         (time, index) =>
           index < 5 && (
-            <div key={index} className="text-xl text-blue-300">
+            <div key={index} className="text-xl text-pink-300">
               {index + 1}. {time.scale} {time.time / 1000} seconds
             </div>
           ),

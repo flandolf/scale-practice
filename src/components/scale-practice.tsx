@@ -175,16 +175,15 @@ const ScalePractice: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col space-y-4 p-10">
-      <h1 className="font-semibold sm:text-3xl md:text-5xl lg:text-7xl text-blue-400">
+    <div className="flex flex-col w-full h-full space-y-3 lg:space-y-4 p-6 lg:p-10">
+      <h1 className="font-semibold text-6xl lg:text-7xl text-blue-400">
         Scale Practice 🚀
       </h1>
       <Link to="/arp">
-        <a className="text-blue-400">To Arpeggio Practice</a>
+        <a className="text-pink-400">To Arpeggio Practice</a>
       </Link>
-      <h2 className="sm:text-sm md:text-2xl">Exams Soon {">:("}</h2>
       <Select onValueChange={(value) => handleGradeChange(value)}>
-        <SelectTrigger className="text-xl">
+        <SelectTrigger>
           <SelectValue placeholder="Select Grade" />
         </SelectTrigger>
         <SelectContent>
@@ -204,9 +203,9 @@ const ScalePractice: React.FC = () => {
         ></Switch>
         <p className="text-xl">Random</p>
       </div>
-      <h1 className="sm:text-3xl md:text-7xl font-semibold pb-3">
+      <h1 className="text-blue-400 text-5xl md:text-7xl font-semibold pb-3">
         {currentScaleName}
-        <span className="text-2xl font-normal">
+        <span className="text-xs md:text-2xl font-normal">
           {" "}
           ({currentScaleNumber}/{totalAmountOfScales})
         </span>
@@ -240,8 +239,6 @@ const ScalePractice: React.FC = () => {
       />
       <div>
         <p className="text-blue-300">&copy; 2024 Andy Wang</p>
-        <p className="text-blue-300">Made with {"<3"} in Melbourne</p>
-        <p className="text-blue-300">v3.5</p>
       </div>
     </div>
   );
