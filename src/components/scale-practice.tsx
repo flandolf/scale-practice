@@ -23,6 +23,13 @@ type ScalesData = {
   };
 };
 
+const methods = [
+  "All tongued",
+  "All slurred",
+  "Two slurred, two tongued",
+  "Two slurred",
+];
+
 const ScalePractice: React.FC = () => {
   const [isCustom, setIsCustom] = useState<boolean>(false);
   const [selectedGrade, setSelectedGrade] = useState<string>("1");
@@ -35,7 +42,8 @@ const ScalePractice: React.FC = () => {
   const [showScale, setShowScale] = useState<boolean>(false);
   const [_scaleNotes, setScaleNotes] = useState<string>("");
   const [randomScale, setRandomScale] = useState<boolean>(false);
-
+  const [examMode, setExamMode] = useState<boolean>(false);
+  const [currentMethod, setCurrentMethod] = useState<string>(methods[0]);
   const totalAmountOfScales = currentScales.length;
   const currentScaleNumber = currentScaleIndex + 1;
 
@@ -146,7 +154,9 @@ const ScalePractice: React.FC = () => {
     updateScale(currentScaleName);
     setShowScale(!showScale);
   };
-
+  const randomNum = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  };
   // Handler for navigating to the next scale
   const handleNextScale = () => {
     let nextScaleIndex;
@@ -161,6 +171,7 @@ const ScalePractice: React.FC = () => {
     const nextScaleName = currentScales[nextScaleIndex];
     setCurrentScaleIndex(nextScaleIndex);
     updateScale(nextScaleName);
+    setCurrentMethod(methods[randomNum(0, methods.length - 1)]);
   };
 
   // Handler for navigating to the previous scale
@@ -188,21 +199,33 @@ const ScalePractice: React.FC = () => {
         </SelectTrigger>
         <SelectContent>
           {Object.keys(scalesData).map((grade) => (
-            <SelectItem className="text-xl" key={grade} value={grade}>
+            <SelectItem key={grade} value={grade}>
               Grade {grade}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
       <div className="flex flex-row space-x-2">
-        <Switch
-          checked={randomScale}
-          onCheckedChange={(checked) => {
-            setRandomScale(checked);
-          }}
-        ></Switch>
-        <p className="text-xl">Random</p>
+        <div className="flex flex-row space-x-2">
+          <Switch
+            checked={randomScale}
+            onCheckedChange={(checked) => {
+              setRandomScale(checked);
+            }}
+          ></Switch>
+          <p className="text-xl">Random</p>
+        </div>
+        <div className="flex flex-row space-x-2">
+          <Switch
+            checked={examMode}
+            onCheckedChange={(checked) => {
+              setExamMode(checked);
+            }}
+          ></Switch>
+          <p className="text-xl">Exam Mode</p>
+        </div>
       </div>
+
       <h1 className="text-blue-400 text-5xl md:text-7xl font-semibold pb-3">
         {currentScaleName}
         <span className="text-xs md:text-2xl font-normal">
@@ -210,6 +233,11 @@ const ScalePractice: React.FC = () => {
           ({currentScaleNumber}/{totalAmountOfScales})
         </span>
       </h1>
+      {examMode && (
+        <div className="flex flex-row space-x-2">
+          <h1 className="text-3xl">{currentMethod}</h1>
+        </div>
+      )}
       <div className="flex space-x-3">
         <Button variant={"default"} onClick={handleBack}>
           Back
